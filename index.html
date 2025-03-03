@@ -179,67 +179,6 @@
             opacity: 0.7;
         }
 
-        .settings {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .toggle-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .toggle-label {
-            margin-right: 8px;
-            font-size: 0.9rem;
-        }
-
-        .toggle {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .toggle-slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
-        }
-
         .daily-indicator {
             font-size: 0.9rem;
             text-align: center;
@@ -292,23 +231,6 @@
     <div class="game-container">
         <div class="instructions">
             <p>Guess the secret 5-letter word. After each guess, you'll see how many letters your word has in common with the secret word (regardless of position).</p>
-        </div>
-
-        <div class="settings">
-            <div class="toggle-container">
-                <span class="toggle-label">Daily Mode</span>
-                <label class="toggle">
-                    <input type="checkbox" id="daily-toggle" checked>
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-            <div class="toggle-container">
-                <span class="toggle-label">Hard Mode</span>
-                <label class="toggle">
-                    <input type="checkbox" id="hard-toggle">
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
         </div>
 
         <div class="daily-indicator" id="daily-word-indicator"></div>
@@ -415,51 +337,45 @@
             "WROTE", "YIELD", "YOUNG", "YOUTH"
         ];
 
-        // Game variables
-        let secretWord = "";
-        let guesses = [];
-        let gameOver = false;
-        let isDaily = true;
-        let isHardMode = false;
-        let dailyWordIndex = 0;
-        
-        // DOM elements
-        const guessInput = document.getElementById('guess');
-        const submitButton = document.getElementById('submit-guess');
-        const guessesContainer = document.getElementById('guesses');
-        const messageElement = document.getElementById('message');
-        const shareContainer = document.getElementById('share-container');
-        const shareButton = document.getElementById('share-btn');
-        const dailyToggle = document.getElementById('daily-toggle');
-        const hardToggle = document.getElementById('hard-toggle');
-        const dailyIndicator = document.getElementById('daily-word-indicator');
-        const statsContainer = document.getElementById('stats-container');
-        const playedElement = document.getElementById('played');
-        const winPercentElement = document.getElementById('win-percent');
-        const streakElement = document.getElementById('streak');
-        const maxStreakElement = document.getElementById('max-streak');
-        const howToPlayButton = document.getElementById('how-to-play');
-
-        // Stats object
-        let stats = {
-            played: 0,
-            won: 0,
-            currentStreak: 0,
-            maxStreak: 0,
-            lastPlayed: null,
-            lastCompletedDaily: null
-        };
-
-        // Initialize game
-        function initGame() {
-            loadStats();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game variables
+            let secretWord = "";
+            let guesses = [];
+            let gameOver = false;
+            
+            // DOM elements
+            const guessInput = document.getElementById('guess');
+            const submitButton = document.getElementById('submit-guess');
+            const guessesContainer = document.getElementById('guesses');
+            const messageElement = document.getElementById('message');
+            const shareContainer = document.getElementById('share-container');
+            const shareButton = document.getElementById('share-btn');
+            const dailyIndicator = document.getElementById('daily-word-indicator');
+            const statsContainer = document.getElementById('stats-container');
+            const playedElement = document.getElementById('played');
+            const winPercentElement = document.getElementById('win-percent');
+            const streakElement = document.getElementById('streak');
+            const maxStreakElement = document.getElementById('max-streak');
+            const howToPlayButton = document.getElementById('how-to-play');
+            
+            // Stats object
+            let stats = {
+                played: 0,
+                won: 0,
+                currentStreak: 0,
+                maxStreak: 0,
+                lastPlayed: null,
+                lastCompletedDaily: null
+            };
             
             // Set up daily word based on date
-            const today = new Date();
-            const daysSinceEpoch = Math.floor(today / 86400000);
-            dailyWordIndex = daysSinceEpoch % WORD_LIST.length;
-            
-            if (isDaily) {
+            function initGame() {
+                loadStats();
+                
+                const today = new Date();
+                const daysSinceEpoch = Math.floor(today / 86400000);
+                const dailyWordIndex = daysSinceEpoch % WORD_LIST.length;
+                
                 secretWord = WORD_LIST[dailyWordIndex];
                 
                 // Check if already played today
@@ -473,304 +389,271 @@
                 
                 dailyIndicator.textContent = `Daily Puzzle #${daysSinceEpoch % 1000}`;
                 
-            } else {
-                // Random word for free play
-                selectRandomWord();
-                guesses = [];
-                gameOver = false;
-                dailyIndicator.textContent = "Free Play Mode";
+                renderGuesses();
+                updateStats();
+                guessInput.focus();
+                
+                console.log("Game initialized with secret word: " + secretWord);
             }
             
-            renderGuesses();
-            updateStats();
-            guessInput.focus();
-        }
-
-        function selectRandomWord() {
-            const randomIndex = Math.floor(Math.random() * WORD_LIST.length);
-            secretWord = WORD_LIST[randomIndex];
-        }
-
-        function loadSavedDailyGame() {
-            const savedGame = localStorage.getItem('jottoDaily');
-            if (savedGame) {
-                const gameData = JSON.parse(savedGame);
-                
-                if (gameData.date === new Date().toDateString() && gameData.wordIndex === dailyWordIndex) {
-                    guesses = gameData.guesses;
-                    gameOver = gameData.gameOver;
+            function loadSavedDailyGame() {
+                const savedGame = localStorage.getItem('jottoDaily');
+                if (savedGame) {
+                    const gameData = JSON.parse(savedGame);
                     
-                    if (gameOver) {
-                        if (guesses.some(g => g.word === secretWord)) {
-                            showSuccessMessage();
-                        } else {
-                            showFailureMessage();
+                    if (gameData.date === new Date().toDateString()) {
+                        guesses = gameData.guesses;
+                        gameOver = gameData.gameOver;
+                        
+                        if (gameOver) {
+                            if (guesses.some(g => g.word === secretWord)) {
+                                showSuccessMessage();
+                            } else {
+                                showFailureMessage();
+                            }
                         }
                     }
                 }
             }
-        }
-
-        function saveGame() {
-            if (isDaily) {
+            
+            function loadStats() {
+                const savedStats = localStorage.getItem('jottoStats');
+                if (savedStats) {
+                    stats = JSON.parse(savedStats);
+                }
+            }
+            
+            function updateStats() {
+                playedElement.textContent = stats.played;
+                winPercentElement.textContent = stats.played > 0 
+                    ? Math.round((stats.won / stats.played) * 100) + '%' 
+                    : '0%';
+                streakElement.textContent = stats.currentStreak;
+                maxStreakElement.textContent = stats.maxStreak;
+                
+                localStorage.setItem('jottoStats', JSON.stringify(stats));
+            }
+            
+            function saveGame() {
                 const gameData = {
                     date: new Date().toDateString(),
-                    wordIndex: dailyWordIndex,
                     guesses: guesses,
                     gameOver: gameOver
                 };
                 localStorage.setItem('jottoDaily', JSON.stringify(gameData));
             }
-        }
-
-        function loadStats() {
-            const savedStats = localStorage.getItem('jottoStats');
-            if (savedStats) {
-                stats = JSON.parse(savedStats);
-            }
-        }
-
-        function updateStats() {
-            playedElement.textContent = stats.played;
-            winPercentElement.textContent = stats.played > 0 
-                ? Math.round((stats.won / stats.played) * 100) + '%' 
-                : '0%';
-            streakElement.textContent = stats.currentStreak;
-            maxStreakElement.textContent = stats.maxStreak;
             
-            localStorage.setItem('jottoStats', JSON.stringify(stats));
-        }
-
-        // Calculate common letters between two words
-        function commonLetters(word1, word2) {
-            const letters1 = word1.split('');
-            const letters2 = [...word2]; // Clone to modify
-            
-            let common = 0;
-            
-            for (let letter of letters1) {
-                const index = letters2.indexOf(letter);
-                if (index !== -1) {
-                    common++;
-                    letters2.splice(index, 1); // Remove the matched letter
-                }
-            }
-            
-            return common;
-        }
-
-        // Handle guess submission
-        function submitGuess() {
-            const guess = guessInput.value.toUpperCase().trim();
-            
-            if (gameOver) {
-                showMessage("Game over! Refresh for a new game.");
-                return;
-            }
-            
-            if (guess.length !== 5) {
-                showMessage("Please enter a 5-letter word.");
-                return;
-            }
-            
-            if (!WORD_LIST.includes(guess)) {
-                showMessage("Not in word list. Try again.");
-                return;
-            }
-            
-            if (guesses.some(g => g.word === guess)) {
-                showMessage("You already guessed that word.");
-                return;
-            }
-            
-            // Hard mode check
-            if (isHardMode && guesses.length > 0) {
-                const lastGuess = guesses[guesses.length - 1];
-                const lastCommon = lastGuess.common;
-                const newCommon = commonLetters(guess, secretWord);
+            // Calculate common letters between two words
+            function commonLetters(word1, word2) {
+                const letters1 = word1.split('');
+                const letters2 = [...word2]; // Clone to modify
                 
-                if (newCommon < lastCommon) {
-                    showMessage(`Hard mode: Your new guess must have at least ${lastCommon} letters in common with the secret word.`);
-                    return;
-                }
-            }
-            
-            const common = commonLetters(guess, secretWord);
-            guesses.push({ word: guess, common: common });
-            
-            renderGuesses();
-            guessInput.value = '';
-            
-            if (guess === secretWord) {
-                gameOver = true;
-                showSuccessMessage();
-                updateStatsForWin();
-            } else if (guesses.length >= 6) {
-                gameOver = true;
-                showFailureMessage();
-                updateStatsForLoss();
-            }
-            
-            saveGame();
-        }
-
-        function updateStatsForWin() {
-            stats.played++;
-            stats.won++;
-            stats.currentStreak++;
-            stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
-            stats.lastPlayed = new Date().toISOString();
-            
-            if (isDaily) {
-                stats.lastCompletedDaily = new Date().toISOString();
-            }
-            
-            updateStats();
-        }
-
-        function updateStatsForLoss() {
-            stats.played++;
-            stats.currentStreak = 0;
-            stats.lastPlayed = new Date().toISOString();
-            
-            if (isDaily) {
-                stats.lastCompletedDaily = new Date().toISOString();
-            }
-            
-            updateStats();
-        }
-
-        function renderGuesses() {
-            guessesContainer.innerHTML = '';
-            
-            guesses.forEach(guess => {
-                const guessRow = document.createElement('div');
-                guessRow.className = 'guess-row';
+                let common = 0;
                 
-                const guessWord = document.createElement('div');
-                guessWord.className = 'guess-word';
-                guessWord.textContent = guess.word;
-                
-                const guessScore = document.createElement('div');
-                guessScore.className = 'guess-score';
-                guessScore.textContent = guess.common;
-                
-                // If all letters match, color the score green
-                if (guess.common === 5) {
-                    guessScore.style.backgroundColor = 'var(--correct-color)';
-                }
-                
-                guessRow.appendChild(guessWord);
-                guessRow.appendChild(guessScore);
-                guessesContainer.appendChild(guessRow);
-            });
-        }
-
-        function showMessage(text, isSuccess = false) {
-            messageElement.textContent = text;
-            messageElement.className = isSuccess ? 'message success' : 'message';
-        }
-
-        function showSuccessMessage() {
-            const attempts = guesses.length;
-            showMessage(`Congratulations! You found the word in ${attempts} ${attempts === 1 ? 'try' : 'tries'}.`, true);
-            shareContainer.style.display = 'block';
-        }
-
-        function showFailureMessage() {
-            showMessage(`Game over! The word was ${secretWord}.`);
-            shareContainer.style.display = 'block';
-        }
-
-        function getShareText() {
-            let shareText = `Jotto.day ${isDaily ? `#${dailyWordIndex % 1000}` : 'Free Play'} ${guesses.length}/6\n\n`;
-            
-            guesses.forEach(guess => {
-                // Use emojis to represent the score
-                let scoreEmoji = '';
-                if (guess.word === secretWord) {
-                    scoreEmoji = '🟩';
-                } else {
-                    // Green circle for 5, blue for others based on closeness
-                    if (guess.common === 5) {
-                        scoreEmoji = '🟩';
-                    } else if (guess.common === 4) {
-                        scoreEmoji = '🟦';
-                    } else if (guess.common === 3) {
-                        scoreEmoji = '🟦';
-                    } else if (guess.common === 2) {
-                        scoreEmoji = '🟦';
-                    } else if (guess.common === 1) {
-                        scoreEmoji = '🟦';
-                    } else {
-                        scoreEmoji = '⬜';
+                for (let letter of letters1) {
+                    const index = letters2.indexOf(letter);
+                    if (index !== -1) {
+                        common++;
+                        letters2.splice(index, 1); // Remove the matched letter
                     }
                 }
                 
-                shareText += `${scoreEmoji} ${guess.common}/5\n`;
-            });
-            
-            shareText += '\nhttps://jotto.day';
-            return shareText;
-        }
-
-        function shareResults() {
-            const shareText = getShareText();
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'My Jotto.day Results',
-                    text: shareText
-                }).catch(error => {
-                    console.log('Error sharing:', error);
-                    fallbackShare(shareText);
-                });
-            } else {
-                fallbackShare(shareText);
+                return common;
             }
-        }
-
-        function fallbackShare(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Results copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
-        }
-
-        function showHowToPlay() {
-            alert(`HOW TO PLAY JOTTO.DAY:
+            
+            // Handle guess submission
+            function submitGuess() {
+                console.log("submitGuess function called");
+                
+                const guess = guessInput.value.toUpperCase().trim();
+                
+                if (gameOver) {
+                    showMessage("Game over! Refresh for a new game.");
+                    return;
+                }
+                
+                if (guess.length !== 5) {
+                    showMessage("Please enter a 5-letter word.");
+                    return;
+                }
+                
+                if (!WORD_LIST.includes(guess)) {
+                    showMessage("Not in word list. Try again.");
+                    return;
+                }
+                
+                if (guesses.some(g => g.word === guess)) {
+                    showMessage("You already guessed that word.");
+                    return;
+                }
+                
+                const common = commonLetters(guess, secretWord);
+                guesses.push({ word: guess, common: common });
+                
+                renderGuesses();
+                guessInput.value = '';
+                
+                if (guess === secretWord) {
+                    gameOver = true;
+                    showSuccessMessage();
+                    updateStatsForWin();
+                } else if (guesses.length >= 6) {
+                    gameOver = true;
+                    showFailureMessage();
+                    updateStatsForLoss();
+                }
+                
+                saveGame();
+            }
+            
+            function updateStatsForWin() {
+                stats.played++;
+                stats.won++;
+                stats.currentStreak++;
+                stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
+                stats.lastPlayed = new Date().toISOString();
+                stats.lastCompletedDaily = new Date().toISOString();
+                
+                updateStats();
+            }
+            
+            function updateStatsForLoss() {
+                stats.played++;
+                stats.currentStreak = 0;
+                stats.lastPlayed = new Date().toISOString();
+                stats.lastCompletedDaily = new Date().toISOString();
+                
+                updateStats();
+            }
+            
+            function renderGuesses() {
+                guessesContainer.innerHTML = '';
+                
+                guesses.forEach(guess => {
+                    const guessRow = document.createElement('div');
+                    guessRow.className = 'guess-row';
+                    
+                    const guessWord = document.createElement('div');
+                    guessWord.className = 'guess-word';
+                    guessWord.textContent = guess.word;
+                    
+                    const guessScore = document.createElement('div');
+                    guessScore.className = 'guess-score';
+                    guessScore.textContent = guess.common;
+                    
+                    // If all letters match, color the score green
+                    if (guess.common === 5) {
+                        guessScore.style.backgroundColor = 'var(--correct-color)';
+                    }
+                    
+                    guessRow.appendChild(guessWord);
+                    guessRow.appendChild(guessScore);
+                    guessesContainer.appendChild(guessRow);
+                });
+            }
+            
+            function showMessage(text, isSuccess = false) {
+                messageElement.textContent = text;
+                messageElement.className = isSuccess ? 'message success' : 'message';
+            }
+            
+            function showSuccessMessage() {
+                const attempts = guesses.length;
+                showMessage(`Congratulations! You found the word in ${attempts} ${attempts === 1 ? 'try' : 'tries'}.`, true);
+                shareContainer.style.display = 'block';
+            }
+            
+            function showFailureMessage() {
+                showMessage(`Game over! The word was ${secretWord}.`);
+                shareContainer.style.display = 'block';
+            }
+            
+            function getShareText() {
+                let shareText = `Jotto.day #${Math.floor(new Date() / 86400000) % 1000} ${guesses.length}/6\n\n`;
+                
+                guesses.forEach(guess => {
+                    // Use emojis to represent the score
+                    let scoreEmoji = '';
+                    if (guess.word === secretWord) {
+                        scoreEmoji = '🟩';
+                    } else {
+                        // Green circle for 5, blue for others based on closeness
+                        if (guess.common === 5) {
+                            scoreEmoji = '🟩';
+                        } else if (guess.common === 4) {
+                            scoreEmoji = '🟦';
+                        } else if (guess.common === 3) {
+                            scoreEmoji = '🟦';
+                        } else if (guess.common === 2) {
+                            scoreEmoji = '🟦';
+                        } else if (guess.common === 1) {
+                            scoreEmoji = '🟦';
+                        } else {
+                            scoreEmoji = '⬜';
+                        }
+                    }
+                    
+                    shareText += `${scoreEmoji} ${guess.common}/5\n`;
+                });
+                
+                shareText += '\nhttps://jotto.day';
+                return shareText;
+            }
+            
+            function shareResults() {
+                const shareText = getShareText();
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'My Jotto.day Results',
+                        text: shareText
+                    }).catch(error => {
+                        console.log('Error sharing:', error);
+                        fallbackShare(shareText);
+                    });
+                } else {
+                    fallbackShare(shareText);
+                }
+            }
+            
+            function fallbackShare(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Results copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            }
+            
+            function showHowToPlay() {
+                alert(`HOW TO PLAY JOTTO.DAY:
 
 1. Guess the secret 5-letter word in 6 tries.
 2. After each guess, you'll see how many letters your word has in common with the secret word.
 3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
 4. Letters can be in any position.
-5. In Hard Mode, each guess must contain at least as many common letters with the secret word as your previous guess.
-
-Daily mode gives everyone the same word each day!`);
-        }
-
-        // Event listeners
-        submitButton.addEventListener('click', submitGuess);
-        
-        guessInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                submitGuess();
+5. Daily mode gives everyone the same word each day!`);
             }
-        });
-        
-        shareButton.addEventListener('click', shareResults);
-        
-        dailyToggle.addEventListener('change', function() {
-            isDaily = this.checked;
+            
+            // Event listeners - using onclick and onkeyup for maximum compatibility
+            submitButton.onclick = function() {
+                console.log("Submit button clicked");
+                submitGuess();
+            };
+            
+            guessInput.onkeyup = function(event) {
+                if (event.key === 'Enter') {
+                    submitGuess();
+                }
+            };
+            
+            shareButton.onclick = shareResults;
+            howToPlayButton.onclick = showHowToPlay;
+            
+            // Initialize the game
             initGame();
-        });
-        
-        hardToggle.addEventListener('change', function() {
-            isHardMode = this.checked;
-        });
-        
-        howToPlayButton.addEventListener('click', showHowToPlay);
-
-        // Initialize the game
-        initGame();
+            
+            // Log that everything loaded successfully
+            console.log("Jotto game initialized successfully");
+            
+            // DEBUG: Print the secret word to console for testing
+            console.log("Today's secret word is: " + secretWord);
