@@ -1,33 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Adjust view based on device height
-    function adjustViewForDevice() {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-        
-        // Adjust keyboard size based on screen height
-        const screenHeight = window.innerHeight;
-        let keyboardHeight;
-        
-        if (screenHeight < 600) {
-            keyboardHeight = '30vh';
-        } else if (screenHeight < 800) {
-            keyboardHeight = '32vh';
-        } else {
-            keyboardHeight = '35vh';
-        }
-        
-        document.documentElement.style.setProperty('--keyboard-height', keyboardHeight);
-    }
-    
-    // Call on load and resize
-    adjustViewForDevice();
-    window.addEventListener('resize', adjustViewForDevice);
-    
-    // Verify the word list is available
-    if (typeof WORD_LIST === 'undefined') {
-        console.error('Error: WORD_LIST not found. Make sure dictionary.js is loaded before this script.');
-    }
-    
     // Game variables
     let secretWord = "";
     let guesses = [];
@@ -43,6 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const keyboard = document.getElementById('keyboard');
     const keys = document.querySelectorAll('.key');
     const guessCounterElement = document.getElementById('guess-counter');
+    
+    // Check if dictionary is loaded
+    if (typeof WORD_LIST === 'undefined') {
+        console.error('Error: WORD_LIST not found. Make sure dictionary.js is loaded before this script.');
+    }
     
     // Set up game
     function initGame() {
@@ -72,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         renderGuesses();
-        
         console.log("Game initialized with secret word: " + secretWord);
     }
     
@@ -105,8 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle guess submission
     function submitGuess() {
-        console.log("submitGuess function called");
-        
         const guess = currentGuess.toUpperCase().trim();
         
         if (gameOver) {
@@ -152,11 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDisplayedGuess() {
         guessInput.value = currentGuess;
         // Force visual update
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                guessInput.value = currentGuess;
-            });
-        });
+        setTimeout(() => {
+            guessInput.value = currentGuess;
+        }, 10);
     }
     
     // Handle keyboard input
@@ -243,83 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
 5. Daily mode gives everyone the same word each day!`);
     }
     
-    // Event listeners for keyboard
-    keys.forEach(key => {
-        // Use touchstart and mousedown for more responsive interaction on mobile
-        ['touchstart', 'mousedown'].forEach(eventType => {
-            key.addEventListener(eventType, function(e) {
-                // Prevent default behavior to avoid any unwanted actions
-                e.preventDefault();
-                
-                const keyValue = this.getAttribute('data-key');
-                
-                // Add visual feedback
-                this.classList.add('active');
-                setTimeout(() => {
-                    this.classList.remove('active');
-                }, 100);
-                
-                handleKeyPress(keyValue);
-            }, { passive: false });
-        });
-        
-        // Prevent default on touchend and mouseup to avoid issues
-        ['touchend', 'mouseup'].forEach(eventType => {
-            key.addEventListener(eventType, function(e) {
-                e.preventDefault();
-            }, { passive: false });
-        });
-    });
-    
-    // Support physical keyboard for desktop
-    document.addEventListener('keydown', function(event) {
-        if (gameOver) return;
-        
-        const key = event.key.toUpperCase();
-        
-        if (key === 'ENTER') {
-            handleKeyPress('ENTER');
-        } else if (key === 'BACKSPACE') {
-            handleKeyPress('DELETE');
-        } else if (/^[A-Z]$/.test(key)) {
-            handleKeyPress(key);
-            
-            // Add visual feedback to the corresponding key
-            const keyElement = document.querySelector(`.key[data-key="${key}"]`);
-            if (keyElement) {
-                keyElement.classList.add('active');
-                setTimeout(() => {
-                    keyElement.classList.remove('active');
-                }, 100);
-            }
-        }
-    });
-    
-    howToPlayButton.onclick = showHowToPlay;
-    
-    // Initialize the game
-    initGame();
-    
-    // Prevent focus and native keyboard on mobile - more aggressive approach
-    guessInput.setAttribute('readonly', 'readonly');
-    guessInput.setAttribute('inputmode', 'none');
-    
-    // Better handling of input field interactions
-    ['focus', 'click', 'touchstart', 'touchend'].forEach(eventType => {
-        guessInput.addEventListener(eventType, function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            guessInput.blur();
-        }, { passive: false });
-    });
-    
-    // Prevent zooming on mobile
-    document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 1) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-    
     // Function to update counter color based on number of guesses
     function updateCounterColor() {
         const numGuesses = guesses.length;
@@ -343,6 +237,74 @@ document.addEventListener('DOMContentLoaded', function() {
         guessCounterElement.style.color = color;
     }
     
-    // Log that everything loaded successfully
-    console.log("Jotto game initialized successfully");
+    // Event listeners for keyboard
+    keys.forEach(key => {
+        // Use a single touchstart/click event handler
+        key.addEventListener('mousedown', handleKeyboardEvent);
+        key.addEventListener('touchstart', handleKeyboardEvent);
+        
+        // Prevent default touch behaviors
+        key.addEventListener('touchend', function(e) {
+            e.preventDefault();
+        });
+    });
+    
+    function handleKeyboardEvent(e) {
+        e.preventDefault();
+        
+        const keyValue = this.getAttribute('data-key');
+        
+        // Add visual feedback
+        this.classList.add('active');
+        setTimeout(() => {
+            this.classList.remove('active');
+        }, 150);
+        
+        handleKeyPress(keyValue);
+    }
+    
+    // Support physical keyboard for desktop
+    document.addEventListener('keydown', function(event) {
+        if (gameOver) return;
+        
+        const key = event.key.toUpperCase();
+        
+        if (key === 'ENTER') {
+            event.preventDefault();
+            handleKeyPress('ENTER');
+        } else if (key === 'BACKSPACE') {
+            event.preventDefault();
+            handleKeyPress('DELETE');
+        } else if (/^[A-Z]$/.test(key)) {
+            event.preventDefault();
+            handleKeyPress(key);
+            
+            // Add visual feedback to the corresponding key
+            const keyElement = document.querySelector(`.key[data-key="${key}"]`);
+            if (keyElement) {
+                keyElement.classList.add('active');
+                setTimeout(() => {
+                    keyElement.classList.remove('active');
+                }, 150);
+            }
+        }
+    });
+    
+    // Prevent mobile keyboard from appearing
+    guessInput.addEventListener('click', function(e) {
+        e.preventDefault();
+        this.blur();
+    });
+    
+    // Prevent zoom on double tap and other touch behaviors
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    howToPlayButton.onclick = showHowToPlay;
+    
+    // Initialize the game
+    initGame();
 });
