@@ -6,6 +6,7 @@
     --correct-color: #10B981;
     --border-color: #D1D5DB;
     --highlight-color: #EFF6FF;
+    --keyboard-height: min(36vh, 240px); /* Adaptive keyboard height */
 }
 
 * {
@@ -30,24 +31,28 @@ body {
     line-height: 1.5;
     max-width: 100%;
     margin: 0 auto;
-    padding: 10px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;
 }
 
 .game-container {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 12px;
+    padding: 10px;
     margin-bottom: 8px;
     display: flex;
     flex-direction: column;
     width: 100%;
     max-width: 440px;
-    height: calc(100vh - 30px);
+    height: 100vh;
     position: relative;
+    box-sizing: border-box;
 }
 
 .game-header {
@@ -55,7 +60,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
 }
 
 .guess-counter {
@@ -68,20 +73,21 @@ body {
 }
 
 h1 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     color: var(--primary-color);
     text-align: center;
     margin: 0;
 }
 
 .brief-instructions {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    padding: 0 5px;
 }
 
 .guess-input {
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
 #guess {
@@ -98,11 +104,13 @@ h1 {
 }
 
 .recent-guesses {
+    flex: 1;
     display: flex;
-    flex-direction: column; /* Changed from column-reverse */
-    margin-bottom: 8px;
-    flex-grow: 1;
+    flex-direction: column;
     overflow-y: auto;
+    min-height: 20px;
+    max-height: calc(100vh - 350px);
+    margin-bottom: 5px;
 }
 
 .guess-row {
@@ -163,22 +171,24 @@ h1 {
 .keyboard-container {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     width: 100%;
+    height: var(--keyboard-height);
     margin-top: auto;
-    padding-top: 8px;
-    margin-bottom: 8px;
+    padding-top: 5px;
+    margin-bottom: 5px;
 }
 
 .keyboard-row {
     display: flex;
     justify-content: center;
     gap: 3px;
+    height: calc(var(--keyboard-height) / 3.5);
 }
 
 .key {
     flex: 1;
-    height: 45px;
+    height: 100%;
     min-width: 22px;
     border: none;
     border-radius: 5px;
@@ -192,9 +202,9 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    touch-action: manipulation; /* Prevents zoom on double-tap */
-    -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
-    user-select: none; /* Prevents text selection */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .key:active, .key.active {
@@ -227,50 +237,62 @@ h1 {
 
 .footer {
     text-align: center;
-    margin-top: 8px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-color);
     opacity: 0.7;
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
 }
 
 .hidden {
     display: none;
 }
 
-/* Mobile optimizations */
-@media (max-width: 380px) {
-    .key {
-        height: 36px;
-        font-size: 0.75rem;
+/* Mobile optimizations - responsive design for all device sizes */
+@media (max-height: 640px) {
+    .game-container {
+        padding: 5px;
     }
     
     h1 {
-        font-size: 1.6rem;
+        font-size: 1.3rem;
     }
     
     .brief-instructions {
-        font-size: 0.75rem;
-    }
-    
-    .game-container {
-        padding: 8px;
-    }
-}
-
-@media (max-height: 700px) {
-    .game-container {
-        padding: 8px;
-    }
-    
-    h1 {
-        font-size: 1.5rem;
+        font-size: 0.65rem;
+        margin-bottom: 4px;
     }
     
     .guess-row {
         margin-bottom: 2px;
     }
     
+    :root {
+        --keyboard-height: min(33vh, 180px);
+    }
+    
+    .footer {
+        font-size: 0.6rem;
+    }
+    
+    .guess-score {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 350px) {
     .key {
-        height: 34px;
+        font-size: 0.7rem;
+    }
+    
+    .special-key {
+        font-size: 0.6rem;
+    }
+    
+    .guess-counter {
+        font-size: 0.75rem;
     }
 }

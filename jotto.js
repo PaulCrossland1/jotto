@@ -1,8 +1,28 @@
-// Import the WORD_LIST from dictionary.js
-// Note: In a browser environment, dictionary.js creates a global WORD_LIST variable
-// that this file can access without an explicit import statement
-
 document.addEventListener('DOMContentLoaded', function() {
+    // Adjust view based on device height
+    function adjustViewForDevice() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        
+        // Adjust keyboard size based on screen height
+        const screenHeight = window.innerHeight;
+        let keyboardHeight;
+        
+        if (screenHeight < 600) {
+            keyboardHeight = '30vh';
+        } else if (screenHeight < 800) {
+            keyboardHeight = '32vh';
+        } else {
+            keyboardHeight = '35vh';
+        }
+        
+        document.documentElement.style.setProperty('--keyboard-height', keyboardHeight);
+    }
+    
+    // Call on load and resize
+    adjustViewForDevice();
+    window.addEventListener('resize', adjustViewForDevice);
+    
     // Verify the word list is available
     if (typeof WORD_LIST === 'undefined') {
         console.error('Error: WORD_LIST not found. Make sure dictionary.js is loaded before this script.');
