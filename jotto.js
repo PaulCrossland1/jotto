@@ -1,9 +1,59 @@
-// Import the word list from dictionary.js
-import WORD_LIST from './dictionary.js';
+// Word list - common 5-letter words
+const WORD_LIST = [
+    "ABOUT", "ABOVE", "ABUSE", "ACTOR", "ADAPT", "ADMIT", "ADOPT", "AFTER", "AGAIN", "AGREE",
+    "AHEAD", "ALBUM", "ALLOW", "ALONE", "ALONG", "ALTER", "AMONG", "ANGER", "ANGLE", "ANGRY",
+    "ANKLE", "APART", "APPLE", "APPLY", "ARENA", "ARGUE", "ARISE", "ARMOR", "ARRAY", "ARROW",
+    "ASSET", "AVOID", "AWARD", "AWARE", "BADLY", "BAKER", "BASES", "BASIC", "BASIS", "BEACH",
+    "BEGIN", "BEING", "BELOW", "BENCH", "BIRTH", "BLACK", "BLAME", "BLANK", "BLAST", "BLEED",
+    "BLEND", "BLESS", "BLIND", "BLOCK", "BLOOD", "BOARD", "BOOST", "BOOTH", "BOUND", "BRAIN",
+    "BRAND", "BRAVE", "BREAD", "BREAK", "BREED", "BRIEF", "BRING", "BROAD", "BROWN", "BUILD",
+    "BURST", "BUYER", "CABLE", "CALIF", "CARRY", "CATCH", "CAUSE", "CHAIN", "CHAIR", "CHART",
+    "CHASE", "CHEAP", "CHECK", "CHEST", "CHIEF", "CHILD", "CHINA", "CHOSE", "CIVIL", "CLAIM",
+    "CLASS", "CLEAN", "CLEAR", "CLICK", "CLOCK", "CLOSE", "COACH", "COAST", "COULD", "COUNT",
+    "COURT", "COVER", "CRAFT", "CRASH", "CREAM", "CRIME", "CROSS", "CROWD", "CROWN", "CURVE",
+    "CYCLE", "DAILY", "DANCE", "DATED", "DEALT", "DEATH", "DEBUT", "DELAY", "DEPTH", "DOING",
+    "DOUBT", "DOZEN", "DRAFT", "DRAMA", "DRAWN", "DREAM", "DRESS", "DRILL", "DRINK", "DRIVE",
+    "DROVE", "DYING", "EAGER", "EARLY", "EARTH", "EIGHT", "ELITE", "EMPTY", "ENEMY", "ENJOY",
+    "ENTER", "ENTRY", "EQUAL", "ERROR", "EVENT", "EVERY", "EXACT", "EXIST", "EXTRA", "FAITH",
+    "FALSE", "FAUNA", "FAVOR", "FEAST", "FIELD", "FIFTH", "FIFTY", "FIGHT", "FINAL", "FIRST",
+    "FIXED", "FLASH", "FLEET", "FLOOR", "FLUID", "FOCUS", "FORCE", "FORTH", "FORTY", "FORUM",
+    "FOUND", "FRAME", "FRANK", "FRAUD", "FRESH", "FRONT", "FRUIT", "FULLY", "FUNNY", "GIANT",
+    "GIVEN", "GLASS", "GLOBE", "GOING", "GRACE", "GRADE", "GRAND", "GRANT", "GRASS", "GREAT",
+    "GREEN", "GROSS", "GROUP", "GROWN", "GUARD", "GUESS", "GUEST", "GUIDE", "HAPPY", "HARRY",
+    "HEART", "HEAVY", "HENCE", "HENRY", "HORSE", "HOTEL", "HOUSE", "HUMAN", "IDEAL", "IMAGE",
+    "INDEX", "INNER", "INPUT", "ISSUE", "JAPAN", "JIMMY", "JOINT", "JONES", "JUDGE", "KNOWN",
+    "LABEL", "LARGE", "LASER", "LATER", "LAUGH", "LAYER", "LEARN", "LEASE", "LEAST", "LEAVE",
+    "LEGAL", "LEVEL", "LEWIS", "LIGHT", "LIMIT", "LINKS", "LINUX", "LIVER", "LIVES", "LOCAL",
+    "LOGIC", "LOOSE", "LOWER", "LUCKY", "LUNCH", "LYING", "MAGIC", "MAJOR", "MAKER", "MARCH",
+    "MARIA", "MATCH", "MAYBE", "MAYOR", "MEANT", "MEDIA", "METAL", "MIGHT", "MINOR", "MINUS",
+    "MIXED", "MODEL", "MONEY", "MONTH", "MORAL", "MOTOR", "MOUNT", "MOUSE", "MOUTH", "MOVIE",
+    "MUSIC", "NEEDS", "NEVER", "NEWLY", "NIGHT", "NOISE", "NORTH", "NOTED", "NOVEL", "NURSE",
+    "OCCUR", "OCEAN", "OFFER", "OFTEN", "ORDER", "OTHER", "OUGHT", "PAINT", "PANEL", "PAPER",
+    "PARTY", "PEACE", "PETER", "PHASE", "PHONE", "PHOTO", "PIECE", "PILOT", "PITCH", "PLACE",
+    "PLAIN", "PLANE", "PLANT", "PLATE", "POINT", "POUND", "POWER", "PRESS", "PRICE", "PRIDE",
+    "PRIME", "PRINT", "PRIOR", "PRIZE", "PROOF", "PROUD", "PROVE", "QUEEN", "QUICK", "QUIET",
+    "QUITE", "RADIO", "RAISE", "RANGE", "RAPID", "RATIO", "REACH", "READY", "REFER", "RIGHT",
+    "RIVAL", "RIVER", "ROBIN", "ROGER", "ROMAN", "ROUGH", "ROUND", "ROUTE", "ROYAL", "RURAL",
+    "SCALE", "SCENE", "SCOPE", "SCORE", "SENSE", "SERVE", "SEVEN", "SHALL", "SHAPE", "SHARE",
+    "SHARP", "SHEET", "SHELF", "SHELL", "SHIFT", "SHIRT", "SHOCK", "SHOOT", "SHORT", "SHOWN",
+    "SIGHT", "SINCE", "SIXTH", "SIXTY", "SIZED", "SKILL", "SLEEP", "SLIDE", "SMALL", "SMART",
+    "SMILE", "SMITH", "SMOKE", "SOLID", "SOLVE", "SORRY", "SOUND", "SOUTH", "SPACE", "SPARE",
+    "SPEAK", "SPEED", "SPEND", "SPENT", "SPLIT", "SPOKE", "SPORT", "STAFF", "STAGE", "STAKE",
+    "STAND", "START", "STATE", "STEAM", "STEEL", "STICK", "STILL", "STOCK", "STONE", "STOOD",
+    "STORE", "STORM", "STORY", "STRIP", "STUCK", "STUDY", "STUFF", "STYLE", "SUGAR", "SUITE",
+    "SUPER", "SWEET", "TABLE", "TAKEN", "TASTE", "TAXES", "TEACH", "TEETH", "TEXAS", "THANK",
+    "THEFT", "THEIR", "THEME", "THERE", "THESE", "THICK", "THING", "THINK", "THIRD", "THOSE",
+    "THREE", "THREW", "THROW", "TIGHT", "TIMES", "TIRED", "TITLE", "TODAY", "TOPIC", "TOTAL",
+    "TOUCH", "TOUGH", "TOWER", "TRACK", "TRADE", "TRAIN", "TREAT", "TREND", "TRIAL", "TRIED",
+    "TRIES", "TRUCK", "TRULY", "TRUST", "TRUTH", "TWICE", "UNDER", "UNDUE", "UNION", "UNITY",
+    "UNTIL", "UPPER", "UPSET", "URBAN", "USAGE", "USUAL", "VALID", "VALUE", "VIDEO", "VIRUS",
+    "VISIT", "VITAL", "VOICE", "WASTE", "WATCH", "WATER", "WEIGH", "WEIRD", "WENT", "WERE",
+    "WEST", "WHALE", "WHEEL", "WHERE", "WHICH", "WHILE", "WHITE", "WHOLE", "WHOSE", "WOMAN",
+    "WOMEN", "WORLD", "WORRY", "WORSE", "WORST", "WORTH", "WOULD", "WOUND", "WRITE", "WRONG",
+    "WROTE", "YIELD", "YOUNG", "YOUTH"
+];
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded");
-    
     // Game variables
     let secretWord = "";
     let guesses = [];
@@ -25,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const howToPlayButton = document.getElementById('how-to-play');
     const keyboard = document.getElementById('keyboard');
     const keys = document.querySelectorAll('.key');
-    const guessCounterElement = document.getElementById('guess-counter');
     
     // Stats object
     let stats = {
@@ -234,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gameOver = true;
             showSuccessMessage();
             updateStatsForWin();
-        } else if (guesses.length >= 10) {
+        } else if (guesses.length >= 6) {
             gameOver = true;
             showFailureMessage();
             updateStatsForLoss();
@@ -246,14 +295,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update the displayed guess in the input field
     function updateDisplayedGuess() {
         guessInput.value = currentGuess;
-        console.log("Input updated with:", currentGuess); // Debug log
     }
     
     // Handle keyboard input
     function handleKeyPress(key) {
         if (gameOver) return;
-        
-        console.log("Key pressed:", key); // Debug log
         
         if (key === 'DELETE') {
             // Delete the last character
@@ -296,24 +342,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderGuesses() {
         guessesContainer.innerHTML = '';
         
-        // Update guess counter
-        guessCounterElement.textContent = `${guesses.length}/10`;
-        
-        // Update counter color based on number of guesses
-        updateGuessCounterColor();
-        
         // Create a reversed copy of guesses to display newest first
         const displayGuesses = [...guesses];
         
-        // Only show up to 5 most recent guesses
-        const recentGuesses = displayGuesses.slice(-5);
-        
-        recentGuesses.forEach((guess, index) => {
+        displayGuesses.forEach((guess, index) => {
             const guessRow = document.createElement('div');
             guessRow.className = 'guess-row';
             
             // Add highlight class for latest guess
-            if (index === recentGuesses.length - 1 && recentGuesses.length === displayGuesses.length) {
+            if (index === displayGuesses.length - 1) {
                 guessRow.classList.add('latest-guess');
             }
             
@@ -336,20 +373,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Update the color of the guess counter based on guess count
-    function updateGuessCounterColor() {
-        const guessCount = guesses.length;
-        const maxGuesses = 10;
-        
-        // Calculate color: from green (hue 120) to red (hue 0)
-        const hue = Math.max(0, 120 - (guessCount / maxGuesses) * 120);
-        guessCounterElement.style.color = `hsl(${hue}, 80%, 40%)`;
-        
-        // Make text bold as guess count increases
-        const weight = 400 + (guessCount / maxGuesses) * 300;
-        guessCounterElement.style.fontWeight = Math.min(700, Math.floor(weight));
-    }
-    
     function showMessage(text, isSuccess = false) {
         messageElement.textContent = text;
         messageElement.className = isSuccess ? 'message success' : 'message';
@@ -357,19 +380,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function showSuccessMessage() {
         const attempts = guesses.length;
-        showMessage(`Congratulations! Found in ${attempts}/10 tries.`, true);
+        showMessage(`Congratulations! You found the word in ${attempts} ${attempts === 1 ? 'try' : 'tries'}.`, true);
         shareContainer.style.display = 'block';
-        statsContainer.style.display = 'flex';
     }
     
     function showFailureMessage() {
         showMessage(`Game over! The word was ${secretWord}.`);
         shareContainer.style.display = 'block';
-        statsContainer.style.display = 'flex';
     }
     
     function getShareText() {
-        let shareText = `Jotto.day ${guesses.length}/10\n\n`;
+        let shareText = `Jotto.day #${Math.floor(new Date() / 86400000) % 1000} ${guesses.length}/6\n\n`;
         
         guesses.forEach(guess => {
             // Use emojis to represent the score
@@ -478,9 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize the game
     initGame();
-    
-    // Initialize the keyboard
-    console.log("Setting up keyboard - found", keys.length, "keys");
     
     // Prevent focus and native keyboard on mobile
     guessInput.addEventListener('focus', function(e) {
