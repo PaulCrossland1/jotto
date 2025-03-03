@@ -131,6 +131,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update the displayed guess in the input field
     function updateDisplayedGuess() {
         guessInput.value = currentGuess;
+        // Force visual update
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                guessInput.value = currentGuess;
+            });
+        });
     }
     
     // Handle keyboard input
@@ -162,15 +168,15 @@ document.addEventListener('DOMContentLoaded', function() {
         guessCounterElement.textContent = `${guesses.length}/${MAX_GUESSES}`;
         updateCounterColor();
         
-        // Create a copy of guesses array and reverse it to display most recent first
-        const displayGuesses = [...guesses].reverse();
-        
-        displayGuesses.forEach((guess, index) => {
+        // We want most recent guesses at the top
+        // Process guesses from newest to oldest
+        for (let i = guesses.length - 1; i >= 0; i--) {
+            const guess = guesses[i];
             const guessRow = document.createElement('div');
             guessRow.className = 'guess-row';
             
-            // Add highlight class for latest guess (which will now be the first item)
-            if (index === 0) {
+            // Add highlight class for the most recent guess
+            if (i === guesses.length - 1) {
                 guessRow.classList.add('latest-guess');
             }
             
@@ -190,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
             guessRow.appendChild(guessWord);
             guessRow.appendChild(guessScore);
             guessesContainer.appendChild(guessRow);
-        });
+        }
     }
     
     function showMessage(text, isSuccess = false) {
@@ -219,16 +225,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listeners for keyboard
     keys.forEach(key => {
-        key.addEventListener('click', function() {
-            const keyValue = this.getAttribute('data-key');
-            
-            // Add visual feedback
-            this.classList.add('active');
-            setTimeout(() => {
-                this.classList.remove('active');
-            }, 100);
-            
-            handleKeyPress(keyValue);
+        // Use touchstart and mousedown for more responsive interaction on mobile
+        ['touchstart', 'mousedown'].forEach(eventType => {
+            key.addEventListener(eventType, function(e) {
+                // Prevent default behavior to avoid any unwanted actions
+                e.preventDefault();
+                
+                const keyValue = this.getAttribute('data-key');
+                
+                // Add visual feedback
+                this.classList.add('active');
+                setTimeout(() => {
+                    this.classList.remove('active');
+                }, 100);
+                
+                handleKeyPress(keyValue);
+            }, { passive: false });
+        });
+        
+        // Prevent default on touchend and mouseup to avoid issues
+        ['touchend', 'mouseup'].forEach(eventType => {
+            key.addEventListener(eventType, function(e) {
+                e.preventDefault();
+            }, { passive: false });
         });
     });
     
@@ -261,18 +280,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the game
     initGame();
     
-    // Prevent focus and native keyboard on mobile
-    guessInput.addEventListener('focus', function(e) {
-        // Prevent default focus behavior
-        e.preventDefault();
-        guessInput.blur();
-        return false;
-    });
+    // Prevent focus and native keyboard on mobile - more aggressive approach
+    guessInput.setAttribute('readonly', 'readonly');
+    guessInput.setAttribute('inputmode', 'none');
     
-    guessInput.addEventListener('click', function(e) {
-        e.preventDefault();
-        guessInput.blur();
-        return false;
+    // Better handling of input field interactions
+    ['focus', 'click', 'touchstart', 'touchend'].forEach(eventType => {
+        guessInput.addEventListener(eventType, function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            guessInput.blur();
+        }, { passive: false });
     });
     
     // Prevent zooming on mobile
