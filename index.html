@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jotto.day - A Simple Word Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
 <body>
     <div class="game-container">
         <div class="game-header">
-            <div class="guess-counter" id="guess-counter">0/6</div>
+            <div class="guess-counter" id="guess-counter">0/20</div>
             <h1>JOTTO.DAY</h1>
         </div>
         
@@ -66,45 +66,13 @@
         </div>
     </div>
     
-    <div class="puzzle-info" id="puzzle-info">
-        <div class="daily-indicator" id="daily-word-indicator"></div>
-    </div>
-
-    <!-- These will only be shown after game completion -->
-    <div class="share-container" id="share-container">
-        <button id="share-btn">
-            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                <polyline points="16 6 12 2 8 6"></polyline>
-                <line x1="12" y1="2" x2="12" y2="15"></line>
-            </svg>
-            SHARE RESULTS
-        </button>
-    </div>
-
-    <div class="stats-container" id="stats-container">
-        <div class="stat-box">
-            <div class="stat-number" id="played">0</div>
-            <div class="stat-label">Played</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-number" id="win-percent">0%</div>
-            <div class="stat-label">Win %</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-number" id="streak">0</div>
-            <div class="stat-label">Streak</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-number" id="max-streak">0</div>
-            <div class="stat-label">Max Streak</div>
-        </div>
-    </div>
-
+    <!-- Removed puzzle-info, share-container, and stats-container -->
+    
     <div class="footer">
         <p>Designed with 💜 | <a href="#" id="how-to-play">How to Play</a></p>
     </div>
 
+    <script src="dictionary.js"></script>
     <script src="jotto.js"></script>
 </body>
 </html>
