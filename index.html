@@ -15,6 +15,7 @@
             --text-color: #1F2937;
             --correct-color: #10B981;
             --border-color: #D1D5DB;
+            --highlight-color: #EFF6FF; /* Subtle blue highlight color */
         }
 
         * {
@@ -57,6 +58,8 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         .instructions {
@@ -66,7 +69,7 @@
 
         .guess-input {
             display: flex;
-            margin-bottom: 10px; /* Reduced margin to keep latest guess visible */
+            margin-bottom: 20px;
         }
 
         #guess {
@@ -97,20 +100,23 @@
 
         .guesses-container {
             margin-bottom: 20px;
+            /* Changed order of guesses - latest at the top */
             display: flex;
-            flex-direction: column-reverse; /* Reverse order to show latest guess at top */
+            flex-direction: column-reverse;
         }
 
         .guess-row {
             display: flex;
             margin-bottom: 10px;
             align-items: center;
+            padding: 5px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
         }
 
-        .guess-row.latest {
-            background-color: rgba(79, 70, 229, 0.05); /* Subtle blue highlight */
-            border-radius: 6px;
-            padding: 3px;
+        .latest-guess {
+            background-color: var(--highlight-color);
+            border-left: 3px solid var(--primary-color);
         }
 
         .guess-word {
@@ -228,17 +234,9 @@
                 font-size: 2rem;
             }
             
-            .instructions {
-                margin-bottom: 10px;
-            }
-            
-            .guess-input {
-                margin-bottom: 5px;
-            }
-            
-            /* Add extra padding at the bottom for mobile keyboards */
-            .footer {
-                margin-bottom: 50px;
+            /* Additional optimization for mobile keyboards */
+            .game-container {
+                padding-bottom: 60px; /* Extra padding at bottom for mobile keyboard */
             }
         }
     </style>
@@ -513,6 +511,7 @@
                 
                 renderGuesses();
                 guessInput.value = '';
+                guessInput.focus(); // Keep focus on input for next guess
                 
                 if (guess === secretWord) {
                     gameOver = true;
@@ -525,6 +524,9 @@
                 }
                 
                 saveGame();
+                
+                // Scroll to ensure the latest guess is visible when keyboard is up
+                window.scrollTo(0, document.body.scrollHeight);
             }
             
             function updateStatsForWin() {
@@ -550,13 +552,16 @@
             function renderGuesses() {
                 guessesContainer.innerHTML = '';
                 
-                guesses.forEach((guess, index) => {
+                // Create a reversed copy of guesses to display newest first
+                const displayGuesses = [...guesses];
+                
+                displayGuesses.forEach((guess, index) => {
                     const guessRow = document.createElement('div');
                     guessRow.className = 'guess-row';
                     
-                    // Add 'latest' class to the most recent guess
-                    if (index === guesses.length - 1) {
-                        guessRow.classList.add('latest');
+                    // Add highlight class for latest guess
+                    if (index === displayGuesses.length - 1) {
+                        guessRow.classList.add('latest-guess');
                     }
                     
                     const guessWord = document.createElement('div');
