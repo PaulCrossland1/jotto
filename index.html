@@ -33,15 +33,11 @@
             margin: 0 auto;
             padding: 20px;
             overflow-x: hidden;
-            /* Prevent body from scrolling unnecessarily */
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         h1 {
@@ -64,12 +60,6 @@
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            /* Allow game container to scroll while input stays fixed */
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
         }
 
         .instructions {
@@ -77,38 +67,39 @@
             font-size: 0.9rem;
         }
 
-        .guess-input-container {
-            position: sticky;
-            bottom: 0;
-            background-color: white;
-            padding: 15px 0 5px;
-            z-index: 10;
-            border-top: 1px solid var(--border-color);
-            margin-top: auto;
-        }
-
         .guess-input {
             display: flex;
-            width: 100%;
+            margin-bottom: 20px;
         }
 
         #guess {
-            width: 100%;
+            flex-grow: 1;
             padding: 12px;
             font-family: 'Space Mono', monospace;
             font-size: 1.1rem;
             border: 2px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 6px 0 0 6px;
             text-transform: uppercase;
         }
 
-        .guesses-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 10px;
+        #submit-guess {
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Space Mono', monospace;
+            font-weight: bold;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #submit-guess:hover {
+            background-color: var(--secondary-color);
         }
 
         .guesses-container {
+            margin-bottom: 20px;
             /* Changed order of guesses - latest at the top */
             display: flex;
             flex-direction: column-reverse;
@@ -196,7 +187,7 @@
 
         .footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
             font-size: 0.8rem;
             color: var(--text-color);
             opacity: 0.7;
@@ -243,8 +234,9 @@
                 font-size: 2rem;
             }
             
+            /* Additional optimization for mobile keyboards */
             .game-container {
-                padding-bottom: 0; /* Remove extra padding */
+                padding-bottom: 60px; /* Extra padding at bottom for mobile keyboard */
             }
         }
     </style>
@@ -262,19 +254,16 @@
 
         <div class="daily-indicator" id="daily-word-indicator"></div>
 
+        <div class="guess-input">
+            <input type="text" id="guess" maxlength="5" placeholder="GUESS" autocomplete="off">
+            <button id="submit-guess">TRY</button>
+        </div>
+
+        <div class="guesses-container" id="guesses">
+            <!-- Guesses will be added here -->
+        </div>
+
         <div class="message" id="message"></div>
-
-        <div class="guesses-wrapper">
-            <div class="guesses-container" id="guesses">
-                <!-- Guesses will be added here -->
-            </div>
-        </div>
-
-        <div class="guess-input-container">
-            <div class="guess-input">
-                <input type="text" id="guess" maxlength="5" placeholder="TYPE GUESS + PRESS ENTER" autocomplete="off">
-            </div>
-        </div>
     </div>
 
     <div class="share-container" id="share-container">
@@ -375,6 +364,7 @@
             
             // DOM elements
             const guessInput = document.getElementById('guess');
+            const submitButton = document.getElementById('submit-guess');
             const guessesContainer = document.getElementById('guesses');
             const messageElement = document.getElementById('message');
             const shareContainer = document.getElementById('share-container');
@@ -535,7 +525,8 @@
                 
                 saveGame();
                 
-                // No need to scroll to bottom since we've fixed the position of elements
+                // Scroll to ensure the latest guess is visible when keyboard is up
+                window.scrollTo(0, document.body.scrollHeight);
             }
             
             function updateStatsForWin() {
@@ -674,7 +665,12 @@
 5. Daily mode gives everyone the same word each day!`);
             }
             
-            // Event listeners - using onkeyup for Enter key
+            // Event listeners - using onclick and onkeyup for maximum compatibility
+            submitButton.onclick = function() {
+                console.log("Submit button clicked");
+                submitGuess();
+            };
+            
             guessInput.onkeyup = function(event) {
                 if (event.key === 'Enter') {
                     submitGuess();
