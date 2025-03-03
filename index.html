@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jotto.day - A Simple Word Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #818CF8;
+            --bg-color: #F3F4F6;
+            --text-color: #1F2937;
+            --correct-color: #10B981;
+            --border-color: #D1D5DB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .game-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .guess-input {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        #guess {
+            flex-grow: 1;
+            padding: 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 6px 0 0 6px;
+            text-transform: uppercase;
+        }
+
+        #submit-guess {
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Space Mono', monospace;
+            font-weight: bold;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #submit-guess:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .guesses-container {
+            margin-bottom: 20px;
+        }
+
+        .guess-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .guess-word {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: #F9FAFB;
+            border-radius: 6px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .guess-score {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--correct-color);
+        }
+
+        .share-container {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #share-btn {
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Space Mono', monospace;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        #share-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .share-icon {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .settings {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-label {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .daily-indicator {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Mobile optimization */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>JOTTO.DAY</h1>
+        <p class="subtitle">A daily word discovery game</p>
+    </header>
+
+    <div class="game-container">
+        <div class="instructions">
+            <p>Guess the secret 5-letter word. After each guess, you'll see how many letters your word has in common with the secret word (regardless of position).</p>
+        </div>
+
+        <div class="settings">
+            <div class="toggle-container">
+                <span class="toggle-label">Daily Mode</span>
+                <label class="toggle">
+                    <input type="checkbox" id="daily-toggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-container">
+                <span class="toggle-label">Hard Mode</span>
+                <label class="toggle">
+                    <input type="checkbox" id="hard-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="daily-indicator" id="daily-word-indicator"></div>
+
+        <div class="guess-input">
+            <input type="text" id="guess" maxlength="5" placeholder="GUESS" autocomplete="off">
+            <button id="submit-guess">TRY</button>
+        </div>
+
+        <div class="guesses-container" id="guesses">
+            <!-- Guesses will be added here -->
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <div class="share-container" id="share-container">
+        <button id="share-btn">
+            <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+            SHARE RESULTS
+        </button>
+    </div>
+
+    <div class="stats-container" id="stats-container">
+        <div class="stat-box">
+            <div class="stat-number" id="played">0</div>
+            <div class="stat-label">Played</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="win-percent">0%</div>
+            <div class="stat-label">Win %</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="streak">0</div>
+            <div class="stat-label">Streak</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="max-streak">0</div>
+            <div class="stat-label">Max Streak</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Designed with 💜 | <a href="#" id="how-to-play">How to Play</a></p>
+    </div>
+
+    <script>
+        // Word list - common 5-letter words
+        const WORD_LIST = [
+            "ABOUT", "ABOVE", "ABUSE", "ACTOR", "ADAPT", "ADMIT", "ADOPT", "AFTER", "AGAIN", "AGREE",
+            "AHEAD", "ALBUM", "ALLOW", "ALONE", "ALONG", "ALTER", "AMONG", "ANGER", "ANGLE", "ANGRY",
+            "ANKLE", "APART", "APPLE", "APPLY", "ARENA", "ARGUE", "ARISE", "ARMOR", "ARRAY", "ARROW",
+            "ASSET", "AVOID", "AWARD", "AWARE", "BADLY", "BAKER", "BASES", "BASIC", "BASIS", "BEACH",
+            "BEGIN", "BEING", "BELOW", "BENCH", "BIRTH", "BLACK", "BLAME", "BLANK", "BLAST", "BLEED",
+            "BLEND", "BLESS", "BLIND", "BLOCK", "BLOOD", "BOARD", "BOOST", "BOOTH", "BOUND", "BRAIN",
+            "BRAND", "BRAVE", "BREAD", "BREAK", "BREED", "BRIEF", "BRING", "BROAD", "BROWN", "BUILD",
+            "BURST", "BUYER", "CABLE", "CALIF", "CARRY", "CATCH", "CAUSE", "CHAIN", "CHAIR", "CHART",
+            "CHASE", "CHEAP", "CHECK", "CHEST", "CHIEF", "CHILD", "CHINA", "CHOSE", "CIVIL", "CLAIM",
+            "CLASS", "CLEAN", "CLEAR", "CLICK", "CLOCK", "CLOSE", "COACH", "COAST", "COULD", "COUNT",
+            "COURT", "COVER", "CRAFT", "CRASH", "CREAM", "CRIME", "CROSS", "CROWD", "CROWN", "CURVE",
+            "CYCLE", "DAILY", "DANCE", "DATED", "DEALT", "DEATH", "DEBUT", "DELAY", "DEPTH", "DOING",
+            "DOUBT", "DOZEN", "DRAFT", "DRAMA", "DRAWN", "DREAM", "DRESS", "DRILL", "DRINK", "DRIVE",
+            "DROVE", "DYING", "EAGER", "EARLY", "EARTH", "EIGHT", "ELITE", "EMPTY", "ENEMY", "ENJOY",
+            "ENTER", "ENTRY", "EQUAL", "ERROR", "EVENT", "EVERY", "EXACT", "EXIST", "EXTRA", "FAITH",
+            "FALSE", "FAUNA", "FAVOR", "FEAST", "FIELD", "FIFTH", "FIFTY", "FIGHT", "FINAL", "FIRST",
+            "FIXED", "FLASH", "FLEET", "FLOOR", "FLUID", "FOCUS", "FORCE", "FORTH", "FORTY", "FORUM",
+            "FOUND", "FRAME", "FRANK", "FRAUD", "FRESH", "FRONT", "FRUIT", "FULLY", "FUNNY", "GIANT",
+            "GIVEN", "GLASS", "GLOBE", "GOING", "GRACE", "GRADE", "GRAND", "GRANT", "GRASS", "GREAT",
+            "GREEN", "GROSS", "GROUP", "GROWN", "GUARD", "GUESS", "GUEST", "GUIDE", "HAPPY", "HARRY",
+            "HEART", "HEAVY", "HENCE", "HENRY", "HORSE", "HOTEL", "HOUSE", "HUMAN", "IDEAL", "IMAGE",
+            "INDEX", "INNER", "INPUT", "ISSUE", "JAPAN", "JIMMY", "JOINT", "JONES", "JUDGE", "KNOWN",
+            "LABEL", "LARGE", "LASER", "LATER", "LAUGH", "LAYER", "LEARN", "LEASE", "LEAST", "LEAVE",
+            "LEGAL", "LEVEL", "LEWIS", "LIGHT", "LIMIT", "LINKS", "LINUX", "LIVER", "LIVES", "LOCAL",
+            "LOGIC", "LOOSE", "LOWER", "LUCKY", "LUNCH", "LYING", "MAGIC", "MAJOR", "MAKER", "MARCH",
+            "MARIA", "MATCH", "MAYBE", "MAYOR", "MEANT", "MEDIA", "METAL", "MIGHT", "MINOR", "MINUS",
+            "MIXED", "MODEL", "MONEY", "MONTH", "MORAL", "MOTOR", "MOUNT", "MOUSE", "MOUTH", "MOVIE",
+            "MUSIC", "NEEDS", "NEVER", "NEWLY", "NIGHT", "NOISE", "NORTH", "NOTED", "NOVEL", "NURSE",
+            "OCCUR", "OCEAN", "OFFER", "OFTEN", "ORDER", "OTHER", "OUGHT", "PAINT", "PANEL", "PAPER",
+            "PARTY", "PEACE", "PETER", "PHASE", "PHONE", "PHOTO", "PIECE", "PILOT", "PITCH", "PLACE",
+            "PLAIN", "PLANE", "PLANT", "PLATE", "POINT", "POUND", "POWER", "PRESS", "PRICE", "PRIDE",
+            "PRIME", "PRINT", "PRIOR", "PRIZE", "PROOF", "PROUD", "PROVE", "QUEEN", "QUICK", "QUIET",
+            "QUITE", "RADIO", "RAISE", "RANGE", "RAPID", "RATIO", "REACH", "READY", "REFER", "RIGHT",
+            "RIVAL", "RIVER", "ROBIN", "ROGER", "ROMAN", "ROUGH", "ROUND", "ROUTE", "ROYAL", "RURAL",
+            "SCALE", "SCENE", "SCOPE", "SCORE", "SENSE", "SERVE", "SEVEN", "SHALL", "SHAPE", "SHARE",
+            "SHARP", "SHEET", "SHELF", "SHELL", "SHIFT", "SHIRT", "SHOCK", "SHOOT", "SHORT", "SHOWN",
+            "SIGHT", "SINCE", "SIXTH", "SIXTY", "SIZED", "SKILL", "SLEEP", "SLIDE", "SMALL", "SMART",
+            "SMILE", "SMITH", "SMOKE", "SOLID", "SOLVE", "SORRY", "SOUND", "SOUTH", "SPACE", "SPARE",
+            "SPEAK", "SPEED", "SPEND", "SPENT", "SPLIT", "SPOKE", "SPORT", "STAFF", "STAGE", "STAKE",
+            "STAND", "START", "STATE", "STEAM", "STEEL", "STICK", "STILL", "STOCK", "STONE", "STOOD",
+            "STORE", "STORM", "STORY", "STRIP", "STUCK", "STUDY", "STUFF", "STYLE", "SUGAR", "SUITE",
+            "SUPER", "SWEET", "TABLE", "TAKEN", "TASTE", "TAXES", "TEACH", "TEETH", "TEXAS", "THANK",
+            "THEFT", "THEIR", "THEME", "THERE", "THESE", "THICK", "THING", "THINK", "THIRD", "THOSE",
+            "THREE", "THREW", "THROW", "TIGHT", "TIMES", "TIRED", "TITLE", "TODAY", "TOPIC", "TOTAL",
+            "TOUCH", "TOUGH", "TOWER", "TRACK", "TRADE", "TRAIN", "TREAT", "TREND", "TRIAL", "TRIED",
+            "TRIES", "TRUCK", "TRULY", "TRUST", "TRUTH", "TWICE", "UNDER", "UNDUE", "UNION", "UNITY",
+            "UNTIL", "UPPER", "UPSET", "URBAN", "USAGE", "USUAL", "VALID", "VALUE", "VIDEO", "VIRUS",
+            "VISIT", "VITAL", "VOICE", "WASTE", "WATCH", "WATER", "WEIGH", "WEIRD", "WENT", "WERE",
+            "WEST", "WHALE", "WHEEL", "WHERE", "WHICH", "WHILE", "WHITE", "WHOLE", "WHOSE", "WOMAN",
+            "WOMEN", "WORLD", "WORRY", "WORSE", "WORST", "WORTH", "WOULD", "WOUND", "WRITE", "WRONG",
+            "WROTE", "YIELD", "YOUNG", "YOUTH"
+        ];
+
+        // Game variables
+        let secretWord = "";
+        let guesses = [];
+        let gameOver = false;
+        let isDaily = true;
+        let isHardMode = false;
+        let dailyWordIndex = 0;
+        
+        // DOM elements
+        const guessInput = document.getElementById('guess');
+        const submitButton = document.getElementById('submit-guess');
+        const guessesContainer = document.getElementById('guesses');
+        const messageElement = document.getElementById('message');
+        const shareContainer = document.getElementById('share-container');
+        const shareButton = document.getElementById('share-btn');
+        const dailyToggle = document.getElementById('daily-toggle');
+        const hardToggle = document.getElementById('hard-toggle');
+        const dailyIndicator = document.getElementById('daily-word-indicator');
+        const statsContainer = document.getElementById('stats-container');
+        const playedElement = document.getElementById('played');
+        const winPercentElement = document.getElementById('win-percent');
+        const streakElement = document.getElementById('streak');
+        const maxStreakElement = document.getElementById('max-streak');
+        const howToPlayButton = document.getElementById('how-to-play');
+
+        // Stats object
+        let stats = {
+            played: 0,
+            won: 0,
+            currentStreak: 0,
+            maxStreak: 0,
+            lastPlayed: null,
+            lastCompletedDaily: null
+        };
+
+        // Initialize game
+        function initGame() {
+            loadStats();
+            
+            // Set up daily word based on date
+            const today = new Date();
+            const daysSinceEpoch = Math.floor(today / 86400000);
+            dailyWordIndex = daysSinceEpoch % WORD_LIST.length;
+            
+            if (isDaily) {
+                secretWord = WORD_LIST[dailyWordIndex];
+                
+                // Check if already played today
+                const lastPlayedDate = stats.lastCompletedDaily ? new Date(stats.lastCompletedDaily).toDateString() : null;
+                if (lastPlayedDate === today.toDateString()) {
+                    loadSavedDailyGame();
+                } else {
+                    guesses = [];
+                    gameOver = false;
+                }
+                
+                dailyIndicator.textContent = `Daily Puzzle #${daysSinceEpoch % 1000}`;
+                
+            } else {
+                // Random word for free play
+                selectRandomWord();
+                guesses = [];
+                gameOver = false;
+                dailyIndicator.textContent = "Free Play Mode";
+            }
+            
+            renderGuesses();
+            updateStats();
+            guessInput.focus();
+        }
+
+        function selectRandomWord() {
+            const randomIndex = Math.floor(Math.random() * WORD_LIST.length);
+            secretWord = WORD_LIST[randomIndex];
+        }
+
+        function loadSavedDailyGame() {
+            const savedGame = localStorage.getItem('jottoDaily');
+            if (savedGame) {
+                const gameData = JSON.parse(savedGame);
+                
+                if (gameData.date === new Date().toDateString() && gameData.wordIndex === dailyWordIndex) {
+                    guesses = gameData.guesses;
+                    gameOver = gameData.gameOver;
+                    
+                    if (gameOver) {
+                        if (guesses.some(g => g.word === secretWord)) {
+                            showSuccessMessage();
+                        } else {
+                            showFailureMessage();
+                        }
+                    }
+                }
+            }
+        }
+
+        function saveGame() {
+            if (isDaily) {
+                const gameData = {
+                    date: new Date().toDateString(),
+                    wordIndex: dailyWordIndex,
+                    guesses: guesses,
+                    gameOver: gameOver
+                };
+                localStorage.setItem('jottoDaily', JSON.stringify(gameData));
+            }
+        }
+
+        function loadStats() {
+            const savedStats = localStorage.getItem('jottoStats');
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+            }
+        }
+
+        function updateStats() {
+            playedElement.textContent = stats.played;
+            winPercentElement.textContent = stats.played > 0 
+                ? Math.round((stats.won / stats.played) * 100) + '%' 
+                : '0%';
+            streakElement.textContent = stats.currentStreak;
+            maxStreakElement.textContent = stats.maxStreak;
+            
+            localStorage.setItem('jottoStats', JSON.stringify(stats));
+        }
+
+        // Calculate common letters between two words
+        function commonLetters(word1, word2) {
+            const letters1 = word1.split('');
+            const letters2 = [...word2]; // Clone to modify
+            
+            let common = 0;
+            
+            for (let letter of letters1) {
+                const index = letters2.indexOf(letter);
+                if (index !== -1) {
+                    common++;
+                    letters2.splice(index, 1); // Remove the matched letter
+                }
+            }
+            
+            return common;
+        }
+
+        // Handle guess submission
+        function submitGuess() {
+            const guess = guessInput.value.toUpperCase().trim();
+            
+            if (gameOver) {
+                showMessage("Game over! Refresh for a new game.");
+                return;
+            }
+            
+            if (guess.length !== 5) {
+                showMessage("Please enter a 5-letter word.");
+                return;
+            }
+            
+            if (!WORD_LIST.includes(guess)) {
+                showMessage("Not in word list. Try again.");
+                return;
+            }
+            
+            if (guesses.some(g => g.word === guess)) {
+                showMessage("You already guessed that word.");
+                return;
+            }
+            
+            // Hard mode check
+            if (isHardMode && guesses.length > 0) {
+                const lastGuess = guesses[guesses.length - 1];
+                const lastCommon = lastGuess.common;
+                const newCommon = commonLetters(guess, secretWord);
+                
+                if (newCommon < lastCommon) {
+                    showMessage(`Hard mode: Your new guess must have at least ${lastCommon} letters in common with the secret word.`);
+                    return;
+                }
+            }
+            
+            const common = commonLetters(guess, secretWord);
+            guesses.push({ word: guess, common: common });
+            
+            renderGuesses();
+            guessInput.value = '';
+            
+            if (guess === secretWord) {
+                gameOver = true;
+                showSuccessMessage();
+                updateStatsForWin();
+            } else if (guesses.length >= 6) {
+                gameOver = true;
+                showFailureMessage();
+                updateStatsForLoss();
+            }
+            
+            saveGame();
+        }
+
+        function updateStatsForWin() {
+            stats.played++;
+            stats.won++;
+            stats.currentStreak++;
+            stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
+            stats.lastPlayed = new Date().toISOString();
+            
+            if (isDaily) {
+                stats.lastCompletedDaily = new Date().toISOString();
+            }
+            
+            updateStats();
+        }
+
+        function updateStatsForLoss() {
+            stats.played++;
+            stats.currentStreak = 0;
+            stats.lastPlayed = new Date().toISOString();
+            
+            if (isDaily) {
+                stats.lastCompletedDaily = new Date().toISOString();
+            }
+            
+            updateStats();
+        }
+
+        function renderGuesses() {
+            guessesContainer.innerHTML = '';
+            
+            guesses.forEach(guess => {
+                const guessRow = document.createElement('div');
+                guessRow.className = 'guess-row';
+                
+                const guessWord = document.createElement('div');
+                guessWord.className = 'guess-word';
+                guessWord.textContent = guess.word;
+                
+                const guessScore = document.createElement('div');
+                guessScore.className = 'guess-score';
+                guessScore.textContent = guess.common;
+                
+                // If all letters match, color the score green
+                if (guess.common === 5) {
+                    guessScore.style.backgroundColor = 'var(--correct-color)';
+                }
+                
+                guessRow.appendChild(guessWord);
+                guessRow.appendChild(guessScore);
+                guessesContainer.appendChild(guessRow);
+            });
+        }
+
+        function showMessage(text, isSuccess = false) {
+            messageElement.textContent = text;
+            messageElement.className = isSuccess ? 'message success' : 'message';
+        }
+
+        function showSuccessMessage() {
+            const attempts = guesses.length;
+            showMessage(`Congratulations! You found the word in ${attempts} ${attempts === 1 ? 'try' : 'tries'}.`, true);
+            shareContainer.style.display = 'block';
+        }
+
+        function showFailureMessage() {
+            showMessage(`Game over! The word was ${secretWord}.`);
+            shareContainer.style.display = 'block';
+        }
+
+        function getShareText() {
+            let shareText = `Jotto.day ${isDaily ? `#${dailyWordIndex % 1000}` : 'Free Play'} ${guesses.length}/6\n\n`;
+            
+            guesses.forEach(guess => {
+                // Use emojis to represent the score
+                let scoreEmoji = '';
+                if (guess.word === secretWord) {
+                    scoreEmoji = '🟩';
+                } else {
+                    // Green circle for 5, blue for others based on closeness
+                    if (guess.common === 5) {
+                        scoreEmoji = '🟩';
+                    } else if (guess.common === 4) {
+                        scoreEmoji = '🟦';
+                    } else if (guess.common === 3) {
+                        scoreEmoji = '🟦';
+                    } else if (guess.common === 2) {
+                        scoreEmoji = '🟦';
+                    } else if (guess.common === 1) {
+                        scoreEmoji = '🟦';
+                    } else {
+                        scoreEmoji = '⬜';
+                    }
+                }
+                
+                shareText += `${scoreEmoji} ${guess.common}/5\n`;
+            });
+            
+            shareText += '\nhttps://jotto.day';
+            return shareText;
+        }
+
+        function shareResults() {
+            const shareText = getShareText();
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Jotto.day Results',
+                    text: shareText
+                }).catch(error => {
+                    console.log('Error sharing:', error);
+                    fallbackShare(shareText);
+                });
+            } else {
+                fallbackShare(shareText);
+            }
+        }
+
+        function fallbackShare(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Results copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function showHowToPlay() {
+            alert(`HOW TO PLAY JOTTO.DAY:
+
+1. Guess the secret 5-letter word in 6 tries.
+2. After each guess, you'll see how many letters your word has in common with the secret word.
+3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
+4. Letters can be in any position.
+5. In Hard Mode, each guess must contain at least as many common letters with the secret word as your previous guess.
+
+Daily mode gives everyone the same word each day!`);
+        }
+
+        // Event listeners
+        submitButton.addEventListener('click', submitGuess);
+        
+        guessInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                submitGuess();
+            }
+        });
+        
+        shareButton.addEventListener('click', shareResults);
+        
+        dailyToggle.addEventListener('change', function() {
+            isDaily = this.checked;
+            initGame();
+        });
+        
+        hardToggle.addEventListener('change', function() {
+            isHardMode = this.checked;
+        });
+        
+        howToPlayButton.addEventListener('click', showHowToPlay);
+
+        // Initialize the game
+        initGame();
