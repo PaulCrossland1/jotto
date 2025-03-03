@@ -2,6 +2,8 @@
 import WORD_LIST from './dictionary.js';
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded");
+    
     // Game variables
     let secretWord = "";
     let guesses = [];
@@ -244,11 +246,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update the displayed guess in the input field
     function updateDisplayedGuess() {
         guessInput.value = currentGuess;
+        console.log("Input updated with:", currentGuess); // Debug log
     }
     
     // Handle keyboard input
     function handleKeyPress(key) {
         if (gameOver) return;
+        
+        console.log("Key pressed:", key); // Debug log
         
         if (key === 'DELETE') {
             // Delete the last character
@@ -473,6 +478,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize the game
     initGame();
+    
+    // Initialize the keyboard
+    console.log("Setting up keyboard - found", keys.length, "keys");
     
     // Prevent focus and native keyboard on mobile
     guessInput.addEventListener('focus', function(e) {
