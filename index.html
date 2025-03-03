@@ -10,24 +10,20 @@
     <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
-    <header>
-        <h1>JOTTO.DAY</h1>
-        <p class="subtitle">A daily word discovery game</p>
-    </header>
-
     <div class="game-container">
-        <div class="instructions">
-            <p>Guess the secret 5-letter word. After each guess, you'll see how many letters your word has in common with the secret word (regardless of position).</p>
+        <div class="game-header">
+            <div class="guess-counter" id="guess-counter">0/6</div>
+            <h1>JOTTO.DAY</h1>
         </div>
-
-        <div class="daily-indicator" id="daily-word-indicator"></div>
-
+        
+        <p class="brief-instructions">Guess the 5-letter word. Numbers show matching letters.</p>
+        
         <div class="guess-input">
             <input type="text" id="guess" maxlength="5" placeholder="GUESS" autocomplete="off" readonly>
         </div>
-
-        <div class="guesses-container" id="guesses">
-            <!-- Guesses will be added here -->
+        
+        <div class="recent-guesses" id="guesses">
+            <!-- Recent guesses will appear here -->
         </div>
 
         <div class="message" id="message"></div>
@@ -69,7 +65,12 @@
             </div>
         </div>
     </div>
+    
+    <div class="puzzle-info" id="puzzle-info">
+        <div class="daily-indicator" id="daily-word-indicator"></div>
+    </div>
 
+    <!-- These will only be shown after game completion -->
     <div class="share-container" id="share-container">
         <button id="share-btn">
             <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

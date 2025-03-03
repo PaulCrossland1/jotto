@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const howToPlayButton = document.getElementById('how-to-play');
     const keyboard = document.getElementById('keyboard');
     const keys = document.querySelectorAll('.key');
+    const guessCounterElement = document.getElementById('guess-counter');
     
     // Stats object
     let stats = {
@@ -342,15 +343,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderGuesses() {
         guessesContainer.innerHTML = '';
         
+        // Update guess counter
+        guessCounterElement.textContent = `${guesses.length}/6`;
+        
         // Create a reversed copy of guesses to display newest first
         const displayGuesses = [...guesses];
         
-        displayGuesses.forEach((guess, index) => {
+        // Only show up to 3 most recent guesses
+        const recentGuesses = displayGuesses.slice(-3);
+        
+        recentGuesses.forEach((guess, index) => {
             const guessRow = document.createElement('div');
             guessRow.className = 'guess-row';
             
             // Add highlight class for latest guess
-            if (index === displayGuesses.length - 1) {
+            if (index === recentGuesses.length - 1 && recentGuesses.length === displayGuesses.length) {
                 guessRow.classList.add('latest-guess');
             }
             
@@ -380,13 +387,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function showSuccessMessage() {
         const attempts = guesses.length;
-        showMessage(`Congratulations! You found the word in ${attempts} ${attempts === 1 ? 'try' : 'tries'}.`, true);
+        showMessage(`Congratulations! Found in ${attempts}/6 tries.`, true);
         shareContainer.style.display = 'block';
+        statsContainer.style.display = 'flex';
     }
     
     function showFailureMessage() {
         showMessage(`Game over! The word was ${secretWord}.`);
         shareContainer.style.display = 'block';
+        statsContainer.style.display = 'flex';
     }
     
     function getShareText() {
