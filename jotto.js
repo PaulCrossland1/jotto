@@ -1,4 +1,5 @@
-import { WORD_LIST } from './words.js';
+// Import the word list from dictionary.js
+import WORD_LIST from './dictionary.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Game variables
@@ -231,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gameOver = true;
             showSuccessMessage();
             updateStatsForWin();
-        } else if (guesses.length >= 6) {
+        } else if (guesses.length >= 10) {
             gameOver = true;
             showFailureMessage();
             updateStatsForLoss();
@@ -291,13 +292,16 @@ document.addEventListener('DOMContentLoaded', function() {
         guessesContainer.innerHTML = '';
         
         // Update guess counter
-        guessCounterElement.textContent = `${guesses.length}/6`;
+        guessCounterElement.textContent = `${guesses.length}/10`;
+        
+        // Update counter color based on number of guesses
+        updateGuessCounterColor();
         
         // Create a reversed copy of guesses to display newest first
         const displayGuesses = [...guesses];
         
-        // Only show up to 3 most recent guesses
-        const recentGuesses = displayGuesses.slice(-3);
+        // Only show up to 5 most recent guesses
+        const recentGuesses = displayGuesses.slice(-5);
         
         recentGuesses.forEach((guess, index) => {
             const guessRow = document.createElement('div');
@@ -327,6 +331,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Update the color of the guess counter based on guess count
+    function updateGuessCounterColor() {
+        const guessCount = guesses.length;
+        const maxGuesses = 10;
+        
+        // Calculate color: from green (hue 120) to red (hue 0)
+        const hue = Math.max(0, 120 - (guessCount / maxGuesses) * 120);
+        guessCounterElement.style.color = `hsl(${hue}, 80%, 40%)`;
+        
+        // Make text bold as guess count increases
+        const weight = 400 + (guessCount / maxGuesses) * 300;
+        guessCounterElement.style.fontWeight = Math.min(700, Math.floor(weight));
+    }
+    
     function showMessage(text, isSuccess = false) {
         messageElement.textContent = text;
         messageElement.className = isSuccess ? 'message success' : 'message';
@@ -334,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function showSuccessMessage() {
         const attempts = guesses.length;
-        showMessage(`Congratulations! Found in ${attempts}/6 tries.`, true);
+        showMessage(`Congratulations! Found in ${attempts}/10 tries.`, true);
         shareContainer.style.display = 'block';
         statsContainer.style.display = 'flex';
     }
@@ -346,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function getShareText() {
-        let shareText = `Jotto.day #${Math.floor(new Date() / 86400000) % 1000} ${guesses.length}/6\n\n`;
+        let shareText = `Jotto.day ${guesses.length}/10\n\n`;
         
         guesses.forEach(guess => {
             // Use emojis to represent the score
