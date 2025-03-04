@@ -4,6 +4,7 @@
   --bg-color: #F3F4F6;
   --text-color: #1F2937;
   --correct-color: #10B981;
+  --present-color: #F59E0B; /* Yellow for correct letter wrong position */
   --border-color: #D1D5DB;
   --highlight-color: #EFF6FF;
   --score-red: #EF4444;    /* Red for 0 matches */
@@ -134,6 +135,32 @@ h1 {
   font-weight: bold;
   letter-spacing: 2px;
   font-size: 1rem;
+}
+
+.guess-word span {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 2px 3px;
+  border-radius: 3px;
+}
+
+/* Hints styling */
+.hint-letter {
+  color: var(--correct-color);
+  font-weight: bold;
+}
+
+/* Position-based styling */
+.correct {
+  background-color: var(--correct-color);
+  color: white;
+  border-radius: 4px;
+}
+
+.present {
+  background-color: var(--present-color);
+  color: white;
+  border-radius: 4px;
 }
 
 .guess-score {

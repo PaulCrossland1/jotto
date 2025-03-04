@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let guesses = [];
     let gameOver = false;
     let currentGuess = "";
-    const MAX_GUESSES = 20;
+    const MAX_GUESSES = 10; // Reduced from 20 to 10
     let revealedLetters = []; // Track which letters have been revealed as hints
     
     // Cache for word validation results
@@ -117,6 +117,39 @@ document.addEventListener('DOMContentLoaded', function() {
         return common;
     }
     
+    // Get letter positions for hints (right letter, right spot or right letter, wrong spot)
+    function getLetterPositions(guess) {
+        // Only store the positions; we'll use them when hints are revealed
+        const positions = Array(5).fill('none'); // Default no match
+        
+        // Make a copy of the secret word to track matched letters
+        const secretLetters = secretWord.split('');
+        const guessLetters = guess.split('');
+        
+        // First pass: find exact matches (green)
+        for (let i = 0; i < 5; i++) {
+            if (guessLetters[i] === secretLetters[i]) {
+                positions[i] = 'correct';
+                // Mark as used to avoid double counting
+                secretLetters[i] = null;
+                guessLetters[i] = null;
+            }
+        }
+        
+        // Second pass: find partial matches (yellow)
+        for (let i = 0; i < 5; i++) {
+            if (guessLetters[i] !== null) {
+                const index = secretLetters.indexOf(guessLetters[i]);
+                if (index !== -1) {
+                    positions[i] = 'present';
+                    secretLetters[index] = null; // Mark as used
+                }
+            }
+        }
+        
+        return positions;
+    }
+    
     // Get a new hint letter that hasn't been revealed yet
     function getNextHintLetter() {
         // Filter out letters that have already been revealed
@@ -135,14 +168,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkForHintReveal() {
         const guessNumber = guesses.length;
         
-        // Reveal hints at 5th, 10th, and 15th guesses
-        if ((guessNumber === 5 || guessNumber === 10 || guessNumber === 15) && 
+        // Reveal hints at 3rd, 6th, and 9th guesses
+        if ((guessNumber === 3 || guessNumber === 6 || guessNumber === 9) && 
             revealedLetters.length < 3) {
             
             const hintLetter = getNextHintLetter();
             if (hintLetter) {
                 revealedLetters.push(hintLetter);
                 showMessage(`Hint: The secret word contains the letter "${hintLetter}"`);
+                
+                // Re-render guesses to show the new hint
+                renderGuesses();
                 
                 // Save the updated game state
                 saveGame();
@@ -286,13 +322,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const guessWord = document.createElement('div');
             guessWord.className = 'guess-word';
             
-            // Create a span for each letter to enable individual styling
-            const wordHTML = Array.from(guess.word).map(letter => {
+            // Create a span for each letter with hint styling if applicable
+            const wordHTML = Array.from(guess.word).map((letter, index) => {
                 let letterClass = '';
                 
-                // If this letter is one of the revealed hint letters, add a class
+                // Check if this letter is one of the revealed hint letters
                 if (revealedLetters.includes(letter) && secretWord.includes(letter)) {
-                    letterClass = 'hint-letter';
+                    // Apply position-based styling
+                    if (secretWord[index] === letter) {
+                        // Correct position - green
+                        letterClass = 'correct';
+                    } else {
+                        // Correct letter but wrong position - yellow
+                        letterClass = 'present';
+                    }
                 }
                 
                 return `<span class="${letterClass}">${letter}</span>`;
@@ -307,21 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
             guessRow.appendChild(guessWord);
             guessRow.appendChild(guessScore);
             guessesContainer.appendChild(guessRow);
-        }
-        
-        // Add styling for hint letters
-        const style = document.createElement('style');
-        style.textContent = `
-            .hint-letter {
-                color: var(--correct-color);
-                font-weight: bold;
-            }
-        `;
-        
-        // Check if the style already exists
-        if (!document.querySelector('style#hint-style')) {
-            style.id = 'hint-style';
-            document.head.appendChild(style);
         }
     }
     
@@ -346,8 +374,11 @@ document.addEventListener('DOMContentLoaded', function() {
 2. After each guess, you'll see how many letters your word has in common with the secret word.
 3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
 4. Letters can be in any position.
-5. Hints will be revealed on your 5th, 10th, and 15th guesses, highlighting a letter from the secret word.
-6. Score colors: 🟥 (0 letters), 🟨 (1-2 letters), 🟦 (3-4 letters), 🟩 (5 letters).`);
+5. Hints are revealed on your 3rd, 6th, and 9th guesses. Each hint reveals one letter from the secret word.
+6. Hint letters are highlighted in all guesses:
+   - Green: correct letter in the correct position
+   - Yellow: correct letter in the wrong position
+7. Score colors: 🟥 (0 letters), 🟨 (1-2 letters), 🟦 (3-4 letters), 🟩 (5 letters).`);
     }
     
     // Function to update counter color based on number of guesses
@@ -367,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (percentage < 1) {
             color = '#EF4444'; // Red
         } else {
-            color = '#B91C1C'; // Dark red for 20/20
+            color = '#B91C1C'; // Dark red for 10/10
         }
         
         guessCounterElement.style.color = color;
