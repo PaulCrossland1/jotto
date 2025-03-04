@@ -652,3 +652,76 @@ h1 {
     margin-right: 10px;
   }
 }
+/* Score graph styling */
+.score-graph {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 2px;
+  line-height: 1.5;
+}
+
+/* Share button styling */
+.share-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-family: 'Space Mono', monospace;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin: 15px auto 0;
+  display: block;
+}
+
+.share-button:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Result message styling */
+.result-message {
+  text-align: center;
+  margin: 10px 0;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+/* Completion modal header styling */
+.completion-modal-header h2 {
+  color: var(--primary-color);
+}
+
+.success-title {
+  color: var(--correct-color) !important;
+}
+
+.failure-title {
+  color: var(--text-color) !important;
+}
+
+/* Date style in header */
+.game-date {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  display: block;
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* Responsive adjustments for completion modal */
+@media (max-width: 400px) {
+  .score-graph {
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (max-height: 600px) {
+  .score-graph {
+    margin: 10px 0;
+  }
+}

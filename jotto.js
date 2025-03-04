@@ -1,4 +1,51 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Helper functions for date formatting and sharing
+    function getFormattedDate() {
+        const today = new Date();
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        return today.toLocaleDateString('en-US', options);
+    }
+
+    function copyToClipboard(text) {
+        // Create temporary element
+        const tempElement = document.createElement('textarea');
+        tempElement.value = text;
+        tempElement.setAttribute('readonly', '');
+        tempElement.style.position = 'absolute';
+        tempElement.style.left = '-9999px';
+        document.body.appendChild(tempElement);
+        
+        // Select and copy
+        tempElement.select();
+        document.execCommand('copy');
+        
+        // Clean up
+        document.body.removeChild(tempElement);
+    }
+
+    function ordinalSuffix(num) {
+        const j = num % 10,
+              k = num % 100;
+        if (j == 1 && k != 11) {
+            return num + "st";
+        }
+        if (j == 2 && k != 12) {
+            return num + "nd";
+        }
+        if (j == 3 && k != 13) {
+            return num + "rd";
+        }
+        return num + "th";
+    }
+
+    function updateTitleWithDate() {
+        const formattedDate = getFormattedDate();
+        const titleElement = document.querySelector('h1');
+        if (titleElement) {
+            titleElement.textContent = `Jotto.Day ${formattedDate}`;
+        }
+    }
+    
     // Game variables
     let secretWord = "";
     let guesses = [];
@@ -64,6 +111,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const dailyWordIndex = daysSinceEpoch % WORD_LIST.length;
         
         secretWord = WORD_LIST[dailyWordIndex];
+        
+        // Update the title with today's date
+        updateTitleWithDate();
         
         // Load saved game if exists
         const savedGame = localStorage.getItem('jottoDaily');
@@ -357,10 +407,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function showSuccessMessage() {
         const attempts = guesses.length;
         showMessage(`Congratulations! Found in ${attempts}/${MAX_GUESSES} tries. Come back tomorrow for a new word.`, true);
+        
+        // Show the completion modal after a short delay
+        setTimeout(() => {
+            createCompletionModal(true, attempts);
+        }, 500);
     }
     
     function showFailureMessage() {
         showMessage(`Game over! The word was ${secretWord}. Come back tomorrow for a new word.`);
+        
+        // Show the completion modal after a short delay
+        setTimeout(() => {
+            createCompletionModal(false, MAX_GUESSES);
+        }, 500);
     }
     
     // Modal elements and functions
@@ -433,6 +493,112 @@ document.addEventListener('DOMContentLoaded', function() {
         playButton.onclick = closeModal;
         
         modalFooter.appendChild(playButton);
+        
+        // Assemble modal
+        modalContainer.appendChild(modalHeader);
+        modalContainer.appendChild(modalContent);
+        modalContainer.appendChild(modalFooter);
+        modalOverlay.appendChild(modalContainer);
+        
+        document.body.appendChild(modalOverlay);
+        
+        // Prevent scrolling when modal is open
+        document.body.style.overflow = 'hidden';
+    }
+
+    function createCompletionModal(isSuccess, guessCount) {
+        // Create modal container
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        
+        const modalContainer = document.createElement('div');
+        modalContainer.className = 'modal-container';
+        
+        // Modal header
+        const modalHeader = document.createElement('div');
+        modalHeader.className = 'modal-header completion-modal-header';
+        
+        const modalTitle = document.createElement('h2');
+        modalTitle.textContent = isSuccess ? 'Success!' : 'Game Over!';
+        modalTitle.className = isSuccess ? 'success-title' : 'failure-title';
+        
+        const closeButton = document.createElement('button');
+        closeButton.className = 'modal-close';
+        closeButton.textContent = '×';
+        closeButton.onclick = closeModal;
+        
+        modalHeader.appendChild(modalTitle);
+        modalHeader.appendChild(closeButton);
+        
+        // Modal content
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        // Generate score visualization
+        const scoreGraph = document.createElement('div');
+        scoreGraph.className = 'score-graph';
+        
+        // Generate emoji sequence
+        let emojiSequence = '';
+        for (let i = 0; i < MAX_GUESSES; i++) {
+            if (i < guessCount && isSuccess && i === guessCount - 1) {
+                // Last successful guess is green
+                emojiSequence += '🟩';
+            } else if (i < guessCount) {
+                // Previous guesses are blue
+                emojiSequence += '🟦';
+            } else {
+                // Unused guesses are white/empty
+                emojiSequence += '⬜';
+            }
+        }
+        
+        scoreGraph.textContent = emojiSequence;
+        
+        // Create text for share message
+        const formattedDate = getFormattedDate();
+        const shareText = isSuccess
+            ? `Jotto.Day ${formattedDate}\n${emojiSequence}`
+            : `Jotto.Day ${formattedDate}\n${emojiSequence}\n`;
+        
+        // Create share button
+        const shareButton = document.createElement('button');
+        shareButton.textContent = 'SHARE RESULTS';
+        shareButton.className = 'share-button';
+        shareButton.onclick = function() {
+            copyToClipboard(shareText);
+            const originalText = this.textContent;
+            this.textContent = 'COPIED!';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 2000);
+        };
+        
+        // Configure message text
+        const messageText = document.createElement('p');
+        messageText.className = 'result-message';
+        
+        if (isSuccess) {
+            messageText.textContent = `🎉 Great job! You found the word in ${guessCount}/${MAX_GUESSES} guesses. 🎉`;
+        } else {
+            messageText.textContent = `📝 Sorry! The word was ${secretWord}. Try again tomorrow! 📝`;
+        }
+        
+        // Add message and score graph to content
+        modalContent.appendChild(messageText);
+        modalContent.appendChild(scoreGraph);
+        modalContent.appendChild(shareButton);
+        
+        // Modal footer
+        const modalFooter = document.createElement('div');
+        modalFooter.className = 'modal-footer';
+        
+        const playAgainButton = document.createElement('button');
+        playAgainButton.className = 'modal-play-button';
+        playAgainButton.textContent = 'CLOSE';
+        playAgainButton.onclick = closeModal;
+        
+        modalFooter.appendChild(playAgainButton);
         
         // Assemble modal
         modalContainer.appendChild(modalHeader);
