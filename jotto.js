@@ -487,14 +487,26 @@ document.addEventListener('DOMContentLoaded', function() {
         let color;
         if (percentage === 0) {
             color = '#10B981'; // Green for 0 guesses
-        } else if (percentage < 0.25) {
-            color = '#34D399'; // Light green
+        } else if (percentage < 0.1) {
+            color = '#4BBB6A'; 
+        } else if (percentage < 0.2) {
+            color = '#69BC5F'; 
+        } else if (percentage < 0.3) {
+            color = '#86BC53'; 
+        } else if (percentage < 0.4) {
+            color = '#FBBF24'; 
         } else if (percentage < 0.5) {
-            color = '#FBBF24'; // Yellow
-        } else if (percentage < 0.75) {
-            color = '#F97316'; // Orange
+            color = '#F7B524'; 
+        } else if (percentage < 0.6) {
+            color = '#F3AB23'; 
+        } else if (percentage < 0.7) {
+            color = '#EB9722'; 
+        } else if (percentage < 0.8) {
+            color = '#F3AB23'; 
+        } else if (percentage < 0.9) {
+            color = '#EB9722'; 
         } else if (percentage < 1) {
-            color = '#EF4444'; // Red
+            color = '#B91C1C'; 
         } else {
             color = '#B91C1C'; // Dark red for 10/10
         }
