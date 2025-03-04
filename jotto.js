@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let gameOver = false;
     let currentGuess = "";
     const MAX_GUESSES = 20;
+    let revealedLetters = []; // Track which letters have been revealed as hints
     
     // DOM elements
     const guessInput = document.getElementById('guess');
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (gameData.date === new Date().toDateString()) {
                 guesses = gameData.guesses;
                 gameOver = gameData.gameOver;
+                revealedLetters = gameData.revealedLetters || [];
                 
                 if (gameOver) {
                     if (guesses.some(g => g.word === secretWord)) {
@@ -55,7 +57,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const gameData = {
             date: new Date().toDateString(),
             guesses: guesses,
-            gameOver: gameOver
+            gameOver: gameOver,
+            revealedLetters: revealedLetters
         };
         localStorage.setItem('jottoDaily', JSON.stringify(gameData));
     }
@@ -76,6 +79,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         return common;
+    }
+    
+    // Get a new hint letter that hasn't been revealed yet
+    function getNextHintLetter() {
+        // Filter out letters that have already been revealed
+        const availableLetters = secretWord.split('').filter(letter => 
+            !revealedLetters.includes(letter)
+        );
+        
+        if (availableLetters.length === 0) return null;
+        
+        // Pick a random letter from the available ones
+        const randomIndex = Math.floor(Math.random() * availableLetters.length);
+        return availableLetters[randomIndex];
+    }
+    
+    // Check if a hint should be revealed based on guess number
+    function checkForHintReveal() {
+        const guessNumber = guesses.length;
+        
+        // Reveal hints at 5th, 10th, and 15th guesses
+        if ((guessNumber === 5 || guessNumber === 10 || guessNumber === 15) && 
+            revealedLetters.length < 3) {
+            
+            const hintLetter = getNextHintLetter();
+            if (hintLetter) {
+                revealedLetters.push(hintLetter);
+                showMessage(`Hint: The secret word contains the letter "${hintLetter}"`);
+                
+                // Save the updated game state
+                saveGame();
+                
+                return true;
+            }
+        }
+        return false;
     }
     
     // Handle guess submission
@@ -116,6 +155,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (guesses.length >= MAX_GUESSES) {
             gameOver = true;
             showFailureMessage();
+        } else {
+            // Check if we need to reveal a hint after this guess
+            const hintRevealed = checkForHintReveal();
+            
+            if (!hintRevealed) {
+                showMessage("");  // Clear any previous messages if no hint
+            }
         }
         
         saveGame();
@@ -159,7 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
         guessCounterElement.textContent = `${guesses.length}/${MAX_GUESSES}`;
         updateCounterColor();
         
-        // We want most recent guesses at the top
         // Process guesses from newest to oldest
         for (let i = guesses.length - 1; i >= 0; i--) {
             const guess = guesses[i];
@@ -173,7 +218,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const guessWord = document.createElement('div');
             guessWord.className = 'guess-word';
-            guessWord.textContent = guess.word;
+            
+            // Create a span for each letter to enable individual styling
+            const wordHTML = Array.from(guess.word).map(letter => {
+                let letterClass = '';
+                
+                // If this letter is one of the revealed hint letters, add a class
+                if (revealedLetters.includes(letter) && secretWord.includes(letter)) {
+                    letterClass = 'hint-letter';
+                }
+                
+                return `<span class="${letterClass}">${letter}</span>`;
+            }).join('');
+            
+            guessWord.innerHTML = wordHTML;
             
             const guessScore = document.createElement('div');
             guessScore.className = 'guess-score';
@@ -187,6 +245,21 @@ document.addEventListener('DOMContentLoaded', function() {
             guessRow.appendChild(guessWord);
             guessRow.appendChild(guessScore);
             guessesContainer.appendChild(guessRow);
+        }
+        
+        // Add styling for hint letters
+        const style = document.createElement('style');
+        style.textContent = `
+            .hint-letter {
+                color: var(--correct-color);
+                font-weight: bold;
+            }
+        `;
+        
+        // Check if the style already exists
+        if (!document.querySelector('style#hint-style')) {
+            style.id = 'hint-style';
+            document.head.appendChild(style);
         }
     }
     
@@ -210,7 +283,8 @@ document.addEventListener('DOMContentLoaded', function() {
 1. Guess the secret 5-letter word in ${MAX_GUESSES} tries.
 2. After each guess, you'll see how many letters your word has in common with the secret word.
 3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
-4. Letters can be in any position.`);
+4. Letters can be in any position.
+5. Hints will be revealed on your 5th, 10th, and 15th guesses, highlighting a letter from the secret word.`);
     }
     
     // Function to update counter color based on number of guesses
