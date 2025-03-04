@@ -356,11 +356,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function showSuccessMessage() {
         const attempts = guesses.length;
-        showMessage(`Congratulations! Found in ${attempts}/${MAX_GUESSES} tries.`, true);
+        showMessage(`Congratulations! Found in ${attempts}/${MAX_GUESSES} tries. Come back tomorrow for a new word.`, true);
     }
     
     function showFailureMessage() {
-        showMessage(`Game over! The word was ${secretWord}.`);
+        showMessage(`Game over! The word was ${secretWord}. Come back tomorrow for a new word.`);
     }
     
     // Modal elements and functions
