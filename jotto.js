@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function showSuccessMessage() {
         const attempts = guesses.length;
-        showMessage(`Congratulations! Found in ${attempts}/${MAX_GUESSES} tries. Come back tomorrow for a new word.`, true);
+        showMessage(`Congratulations! Found in ${attempts}/${MAX_GUESSES} tries. `, true);
         
         // Show the completion modal after a short delay
         setTimeout(() => {

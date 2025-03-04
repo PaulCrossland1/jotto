@@ -7,7 +7,7 @@
   --present-color: #F59E0B; /* Yellow for correct letter wrong position */
   --border-color: #D1D5DB;
   --highlight-color: #EFF6FF;
-  --score-blue: #3B82F6;   /* Blue for 3-4 matches */
+  --score-blue: #4F46E5;   /* Blue for 3-4 matches */
   --score-green: #10B981;  /* Green for 5 matches (same as correct-color) */
 }
 
@@ -74,12 +74,11 @@ h1 {
 }
 
 .game-date {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--secondary-color);
   text-align: center;
   margin: 8px 0 4px;
   font-weight: 500;
-  font-style: italic;
 }
 
 .brief-instructions {
