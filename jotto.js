@@ -239,25 +239,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listeners for keyboard
     keys.forEach(key => {
-        // Use a single touchstart/click event handler for better mobile performance
+        // Use a single touchstart/click event handler
         key.addEventListener('mousedown', handleKeyboardEvent);
-        key.addEventListener('touchstart', handleKeyboardEvent, { passive: false });
+        key.addEventListener('touchstart', handleKeyboardEvent);
         
-        // Prevent default touch behaviors that might interfere
+        // Prevent default touch behaviors
         key.addEventListener('touchend', function(e) {
             e.preventDefault();
-        }, { passive: false });
-        
-        // Prevent context menu on long press (mobile)
-        key.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
         });
     });
     
     function handleKeyboardEvent(e) {
         e.preventDefault();
-        e.stopPropagation();
         
         const keyValue = this.getAttribute('data-key');
         
@@ -268,8 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 150);
         
         handleKeyPress(keyValue);
-        
-        return false;
     }
     
     // Support physical keyboard for desktop
@@ -299,31 +290,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // More aggressive prevention of mobile keyboard and interactions
-    ['click', 'focus', 'touchstart', 'touchend', 'mousedown'].forEach(event => {
-        guessInput.addEventListener(event, function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.blur();
-            return false;
-        }, { passive: false });
+    // Prevent mobile keyboard from appearing
+    guessInput.addEventListener('click', function(e) {
+        e.preventDefault();
+        this.blur();
     });
     
-    // Prevent zoom on double tap and other unwanted touch behaviors
+    // Prevent zoom on double tap and other touch behaviors
     document.addEventListener('touchstart', function(e) {
         if (e.touches.length > 1) {
             e.preventDefault();
         }
     }, { passive: false });
-    
-    // Adjust layout after orientation changes
-    window.addEventListener('resize', function() {
-        // Small delay to ensure the browser has completed any viewport adjustments
-        setTimeout(function() {
-            // Scroll to top to ensure everything is visible
-            window.scrollTo(0, 0);
-        }, 100);
-    });
     
     howToPlayButton.onclick = showHowToPlay;
     
