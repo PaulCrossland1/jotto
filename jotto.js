@@ -104,13 +104,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Set up game
     function initGame() {
-        const today = new Date();
-        const daysSinceEpoch = Math.floor(today / 86400000);
-        const dailyWordIndex = daysSinceEpoch % WORD_LIST.length;
+        // Get current UTC date
+        const now = new Date();
+        const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
         
-        secretWord = WORD_LIST[dailyWordIndex];
+        // Calculate days since epoch using UTC date
+        const daysSinceEpoch = Math.floor(utcDate / 86400000);
+        
+        // Use the days since epoch as a seed for pseudo-random selection
+        // This ensures the same word is chosen for everyone on the same UTC day
+        const seededRandom = function(seed) {
+            // Simple seeded random function
+            let x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        };
+        
+        // Select a random word using the day as a seed
+        const randomIndex = Math.floor(seededRandom(daysSinceEpoch) * WORD_LIST.length);
+        secretWord = WORD_LIST[randomIndex];
         
         // Update the date display
         updateDateDisplay();
@@ -120,7 +132,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (savedGame) {
             const gameData = JSON.parse(savedGame);
             
-            if (gameData.date === new Date().toDateString()) {
+            // Check if the saved game is from the current UTC day
+            const savedDate = new Date(gameData.date);
+            const savedUTCDay = new Date(Date.UTC(savedDate.getUTCFullYear(), savedDate.getUTCMonth(), savedDate.getUTCDate()));
+            
+            if (savedUTCDay.toISOString() === utcDate.toISOString()) {
                 guesses = gameData.guesses;
                 gameOver = gameData.gameOver;
                 revealedLetters = gameData.revealedLetters || [];
@@ -134,6 +150,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+        
+        // Also modify the saveGame function to save using UTC date
+        saveGame = function() {
+            const gameData = {
+                date: new Date().toUTCString(), // Store as UTC string
+                guesses: guesses,
+                gameOver: gameOver,
+                revealedLetters: revealedLetters
+            };
+            localStorage.setItem('jottoDaily', JSON.stringify(gameData));
+        };
         
         renderGuesses();
         console.log("Game initialized with secret word: " + secretWord);
