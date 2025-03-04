@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formattedDate = getFormattedDate();
         const titleElement = document.querySelector('h1');
         if (titleElement) {
-            titleElement.textContent = `Jotto.Day ${formattedDate}`;
+            titleElement.textContent = `Jotto.Day: ${formattedDate}`;
         }
     }
     
@@ -558,8 +558,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create text for share message
         const formattedDate = getFormattedDate();
         const shareText = isSuccess
-            ? `Jotto.Day ${formattedDate}\n${emojiSequence}`
-            : `Jotto.Day ${formattedDate}\n${emojiSequence}\n`;
+            ? `Jotto.Day: ${formattedDate}\n${emojiSequence}`
+            : `Jotto.Day: ${formattedDate}\n${emojiSequence}\n`;
         
         // Create share button
         const shareButton = document.createElement('button');
