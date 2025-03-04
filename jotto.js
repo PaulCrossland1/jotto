@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const MAX_GUESSES = 20;
     let revealedLetters = []; // Track which letters have been revealed as hints
     
+    // Cache for word validation results
+    const wordValidationCache = {};
+    
     // DOM elements
     const guessInput = document.getElementById('guess');
     const guessesContainer = document.getElementById('guesses');
@@ -19,6 +22,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if dictionary is loaded
     if (typeof WORD_LIST === 'undefined') {
         console.error('Error: WORD_LIST not found. Make sure dictionary.js is loaded before this script.');
+    }
+    
+    /**
+     * Checks if a word is valid using Dictionary API
+     */
+    async function isValidWord(word) {
+        // Normalize the word for consistent checking
+        word = word.toUpperCase().trim();
+        
+        // Quick validation - if it's in our curated list, it's valid
+        if (WORD_LIST.includes(word)) {
+            return true;
+        }
+        
+        // Check cache to avoid duplicate API calls
+        if (wordValidationCache.hasOwnProperty(word)) {
+            return wordValidationCache[word];
+        }
+        
+        try {
+            // Make API call to dictionary service
+            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
+            
+            // Update cache with the result
+            const isValid = response.ok;
+            wordValidationCache[word] = isValid;
+            
+            return isValid;
+        } catch (e) {
+            console.error('Dictionary API error:', e);
+            // If API fails, fall back to our word list
+            return WORD_LIST.includes(word);
+        }
     }
     
     // Set up game
@@ -118,8 +154,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle guess submission
-    function submitGuess() {
+    async function submitGuess() {
         const guess = currentGuess.toUpperCase().trim();
+        
+        // Clear input field immediately regardless of outcome
+        currentGuess = '';
+        updateDisplayedGuess();
         
         if (gameOver) {
             showMessage("Game over! Refresh for a new game.");
@@ -131,23 +171,37 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        if (!WORD_LIST.includes(guess)) {
-            showMessage("Not in word list. Try again.");
-            return;
-        }
-        
+        // Check if the word has already been guessed
         if (guesses.some(g => g.word === guess)) {
             showMessage("You already guessed that word.");
             return;
         }
         
+        // For daily puzzle mode, only allow words from WORD_LIST
+        // Uncomment this if you want to restrict to only your curated word list
+        /*
+        if (!WORD_LIST.includes(guess)) {
+            showMessage("Not in word list. Try again.");
+            return;
+        }
+        */
+        
+        // Show loading message while we check the word
+        showMessage("Checking word...");
+        
+        // Validate the word using the dictionary API
+        const isValid = await isValidWord(guess);
+        
+        if (!isValid) {
+            showMessage("Not a valid English word. Try again.");
+            return;
+        }
+        
+        // Word is valid, process the guess
         const common = commonLetters(guess, secretWord);
         guesses.push({ word: guess, common: common });
         
         renderGuesses();
-        guessInput.value = '';
-        currentGuess = '';
-        updateDisplayedGuess();
         
         if (guess === secretWord) {
             gameOver = true;
