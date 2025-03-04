@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
 2. After each guess, you'll see how many letters your word has in common with the secret word.
 3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
 4. Letters can be in any position.
-5. Hints are revealed on your 3rd, 6th, and 9th guesses. Each hint reveals one letter from the secret word & it's hints in the correct position.
+5. Hints are revealed on your 3rd, 6th, and 9th guesses. Each hint reveals one letter from the secret word.
 6. Hint letters are highlighted in all guesses:
    - Green: correct letter in the correct position
    - Yellow: correct letter in the wrong position
