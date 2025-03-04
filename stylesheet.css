@@ -152,15 +152,13 @@ h1 {
 
 /* Position-based styling */
 .correct {
-  background-color: var(--correct-color);
-  color: white;
-  border-radius: 4px;
+  color: var(--correct-color);
+  font-weight: bold;
 }
 
 .present {
-  background-color: var(--present-color);
-  color: white;
-  border-radius: 4px;
+  color: var(--present-color);
+  font-weight: bold;
 }
 
 .guess-score {
