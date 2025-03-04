@@ -290,14 +290,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Get score color class based on common letter count
     function getScoreColorClass(commonCount) {
-        if (commonCount === 0) {
-            return 'score-red';     // 🟥 Red for 0
-        } else if (commonCount <= 2) {
-            return 'score-yellow';  // 🟨 Yellow for 1-2
-        } else if (commonCount <= 4) {
-            return 'score-blue';    // 🟦 Blue for 3-4
+        if (commonCount <= 4) {
+            return 'score-blue';
         } else {
-            return 'score-green';   // 🟩 Green for 5
+            return 'score-green';
         }
     }
     
