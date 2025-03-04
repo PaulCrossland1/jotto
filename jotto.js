@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p1>After each guess, you'll see how many letters your word has in common with the secret word.</p1>
                     <div class="example">
                         <div class="example-word">EARTH</div>
-                        <div class="example-score score-yellow">2</div>
+                        <div class="example-score score-blue">2</div>
                     </div>
                     <p2 class="example-caption">This guess has 2 letters in common with the secret word "LIGHT"</p2>
                 </div>
