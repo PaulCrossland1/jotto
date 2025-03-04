@@ -102,9 +102,9 @@
   }
   
   .recent-guesses {
-    flex: 1;
+    height: 200px; /* Fixed height to show approximately 4 guesses */
     overflow-y: auto;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     border-radius: 6px;
     padding: 0 4px;
   }
@@ -148,12 +148,13 @@
   
   .message {
     text-align: center;
-    padding: 8px;
-    margin-bottom: 16px;
+    padding: 6px;
+    margin-bottom: 10px;
     border-radius: 6px;
     font-weight: bold;
     color: var(--primary-color);
-    min-height: 36px;
+    min-height: 30px;
+    font-size: 0.9rem;
   }
   
   .success {
@@ -168,7 +169,7 @@
   .keyboard-row {
     display: flex;
     justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   
   .key {
@@ -218,9 +219,9 @@
   }
   
   /* Mobile optimizations */
-  @media (max-height: 700px) {
+  @media screen and (max-width: 767px) {
     .game-container {
-      padding: 12px;
+      padding: 10px;
     }
     
     h1 {
@@ -233,45 +234,54 @@
     }
     
     .guess-input {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     
     #guess {
-      padding: 10px;
+      padding: 8px;
       font-size: 1rem;
     }
     
     .recent-guesses {
-      margin-bottom: 12px;
+      height: 180px;
+      margin-bottom: 10px;
     }
     
     .guess-row {
-      margin-bottom: 6px;
+      margin-bottom: 5px;
+      padding: 4px;
     }
     
     .guess-word {
       font-size: 0.9rem;
-      padding: 6px 10px;
+      padding: 6px;
     }
     
     .guess-score {
       width: 32px;
       height: 32px;
       font-size: 0.9rem;
+      margin-left: 8px;
     }
     
     .key {
-      height: 42px;
+      height: 40px;
       font-size: 0.9rem;
+      margin: 0 1px;
+    }
+    
+    .keyboard-row {
+      margin-bottom: 5px;
     }
     
     .footer {
-      margin-top: 12px;
+      margin-top: 8px;
       font-size: 0.75rem;
     }
   }
   
-  @media (max-height: 600px) {
+  /* Small mobile devices */
+  @media screen and (max-width: 380px) {
     .game-container {
       padding: 8px;
     }
@@ -289,43 +299,81 @@
       margin-bottom: 8px;
     }
     
-    #guess {
-      padding: 8px;
-      font-size: 0.9rem;
-    }
-    
     .recent-guesses {
+      height: 160px;
       margin-bottom: 8px;
     }
     
     .guess-row {
       margin-bottom: 4px;
-      padding: 4px;
+      padding: 3px;
     }
     
     .guess-word {
       font-size: 0.8rem;
-      padding: 6px 8px;
+      padding: 5px;
     }
     
     .guess-score {
       width: 28px;
       height: 28px;
       font-size: 0.8rem;
+      margin-left: 6px;
+    }
+    
+    .key {
+      height: 35px;
+      font-size: 0.8rem;
+      margin: 0 1px;
+    }
+    
+    .special-key {
+      font-size: 0.7rem;
+    }
+    
+    .keyboard-row {
+      margin-bottom: 4px;
+    }
+  }
+  
+  /* Very small mobile devices */
+  @media screen and (max-width: 320px) {
+    .key {
+      height: 32px;
+      font-size: 0.7rem;
+    }
+    
+    .special-key {
+      font-size: 0.6rem;
+    }
+    
+    .recent-guesses {
+      height: 140px;
+    }
+  }
+  
+  /* Height-specific adjustments */
+  @media screen and (max-height: 670px) {
+    .recent-guesses {
+      height: 150px;
     }
     
     .key {
       height: 36px;
-      font-size: 0.8rem;
+    }
+  }
+  
+  @media screen and (max-height: 600px) {
+    .recent-guesses {
+      height: 120px;
     }
     
-    .keyboard-row {
-      margin-bottom: 6px;
+    .key {
+      height: 32px;
     }
     
-    .footer {
-      margin-top: 8px;
-      font-size: 0.7rem;
+    .guess-row {
+      margin-bottom: 3px;
     }
   }
   
