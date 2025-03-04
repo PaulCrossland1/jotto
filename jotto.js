@@ -252,6 +252,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Get score color class based on common letter count
+    function getScoreColorClass(commonCount) {
+        if (commonCount === 0) {
+            return 'score-red';     // 🟥 Red for 0
+        } else if (commonCount <= 2) {
+            return 'score-yellow';  // 🟨 Yellow for 1-2
+        } else if (commonCount <= 4) {
+            return 'score-blue';    // 🟦 Blue for 3-4
+        } else {
+            return 'score-green';   // 🟩 Green for 5
+        }
+    }
+    
     function renderGuesses() {
         guessesContainer.innerHTML = '';
         
@@ -288,13 +301,8 @@ document.addEventListener('DOMContentLoaded', function() {
             guessWord.innerHTML = wordHTML;
             
             const guessScore = document.createElement('div');
-            guessScore.className = 'guess-score';
+            guessScore.className = `guess-score ${getScoreColorClass(guess.common)}`;
             guessScore.textContent = guess.common;
-            
-            // If all letters match, color the score green
-            if (guess.common === 5) {
-                guessScore.style.backgroundColor = 'var(--correct-color)';
-            }
             
             guessRow.appendChild(guessWord);
             guessRow.appendChild(guessScore);
@@ -338,7 +346,8 @@ document.addEventListener('DOMContentLoaded', function() {
 2. After each guess, you'll see how many letters your word has in common with the secret word.
 3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
 4. Letters can be in any position.
-5. Hints will be revealed on your 5th, 10th, and 15th guesses, highlighting a letter from the secret word.`);
+5. Hints will be revealed on your 5th, 10th, and 15th guesses, highlighting a letter from the secret word.
+6. Score colors: 🟥 (0 letters), 🟨 (1-2 letters), 🟦 (3-4 letters), 🟩 (5 letters).`);
     }
     
     // Function to update counter color based on number of guesses

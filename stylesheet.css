@@ -6,6 +6,10 @@
   --correct-color: #10B981;
   --border-color: #D1D5DB;
   --highlight-color: #EFF6FF;
+  --score-red: #EF4444;    /* Red for 0 matches */
+  --score-yellow: #F59E0B; /* Yellow for 1-2 matches */
+  --score-blue: #3B82F6;   /* Blue for 3-4 matches */
+  --score-green: #10B981;  /* Green for 5 matches (same as correct-color) */
 }
 
 * {
@@ -144,6 +148,23 @@ h1 {
   font-weight: bold;
   margin-left: 12px;
   font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.score-red {
+  background-color: var(--score-red);
+}
+
+.score-yellow {
+  background-color: var(--score-yellow);
+}
+
+.score-blue {
+  background-color: var(--score-blue);
+}
+
+.score-green {
+  background-color: var(--score-green);
 }
 
 .message {
