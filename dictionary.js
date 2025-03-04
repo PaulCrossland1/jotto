@@ -216,6 +216,6 @@ const WORD_LIST = [
     "WOODY", "WOOED", "WOOER", "WOOLY", "WORDY", "WORRY", "WORSE", "WORST", "WORTH", "WOULD",
     "WOUND", "WOVEN", "WRACK", "WRATH", "WREAK", "WRECK", "WREST", "WRIER", "WRING", "WRIST",
     "WRITE", "WRITS", "WRONG", "WROTE", "WRUNG", "YACHT", "YEARN", "YEAST", "YIELD", "YOUNG",
-    "YOURS", "YOUTH", "ZEBRA", "ZESTY", "ZONAL", "ZONED"
+    "YOURS", "YOUTH", "ZEBRA", "ZESTY", "ZONAL", "ZONED", 
   ];
   
