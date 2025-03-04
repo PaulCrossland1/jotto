@@ -210,8 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
 1. Guess the secret 5-letter word in ${MAX_GUESSES} tries.
 2. After each guess, you'll see how many letters your word has in common with the secret word.
 3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
-4. Letters can be in any position.
-5. Daily mode gives everyone the same word each day!`);
+4. Letters can be in any position.`);
     }
     
     // Function to update counter color based on number of guesses
