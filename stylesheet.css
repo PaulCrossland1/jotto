@@ -67,16 +67,25 @@ body {
 }
 
 h1 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   color: var(--primary-color);
   text-align: center;
   margin: 0;
 }
 
+.game-date {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  text-align: center;
+  margin: 8px 0 4px;
+  font-weight: 500;
+  font-style: italic;
+}
+
 .brief-instructions {
   font-size: 0.75rem;
   text-align: center;
-  margin: 12px 0;
+  margin: 8px 0 12px;
 }
 
 .guess-input {
@@ -268,12 +277,17 @@ h1 {
   }
   
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+  }
+
+  .game-date {
+    font-size: 0.8rem;
+    margin: 6px 0 3px;
   }
   
   .brief-instructions {
-    font-size: 0.8rem;
-    margin: 8px 0;
+    font-size: 0.75rem;
+    margin: 6px 0;
   }
   
   .guess-input {
@@ -321,12 +335,17 @@ h1 {
   }
   
   h1 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+  }
+
+  .game-date {
+    font-size: 0.75rem;
+    margin: 4px 0 2px;
   }
   
   .brief-instructions {
-    font-size: 0.75rem;
-    margin: 6px 0;
+    font-size: 0.7rem;
+    margin: 4px 0;
   }
   
   .guess-input {
@@ -701,15 +720,6 @@ h1 {
 
 .failure-title {
   color: var(--text-color) !important;
-}
-
-/* Date style in header */
-.game-date {
-  font-size: 0.9rem;
-  color: var(--secondary-color);
-  display: block;
-  text-align: center;
-  margin-top: 2px;
 }
 
 /* Responsive adjustments for completion modal */

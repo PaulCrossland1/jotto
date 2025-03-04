@@ -38,11 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return num + "th";
     }
 
-    function updateTitleWithDate() {
+    function updateDateDisplay() {
         const formattedDate = getFormattedDate();
-        const titleElement = document.querySelector('h1');
-        if (titleElement) {
-            titleElement.textContent = `Jotto.Day: ${formattedDate}`;
+        const dateElement = document.getElementById('game-date');
+        if (dateElement) {
+            dateElement.textContent = formattedDate;
         }
     }
     
@@ -112,8 +112,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         secretWord = WORD_LIST[dailyWordIndex];
         
-        // Update the title with today's date
-        updateTitleWithDate();
+        // Update the date display
+        updateDateDisplay();
         
         // Load saved game if exists
         const savedGame = localStorage.getItem('jottoDaily');
