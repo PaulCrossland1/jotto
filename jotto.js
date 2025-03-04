@@ -367,18 +367,147 @@ document.addEventListener('DOMContentLoaded', function() {
         showMessage(`Game over! The word was ${secretWord}.`);
     }
     
-    function showHowToPlay() {
-        alert(`HOW TO PLAY JOTTO.DAY:
+    // Modal elements and functions
+    function createIntroModal() {
+        // Create modal container
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        
+        const modalContainer = document.createElement('div');
+        modalContainer.className = 'modal-container';
+        
+        // Modal header
+        const modalHeader = document.createElement('div');
+        modalHeader.className = 'modal-header';
+        
+        const modalTitle = document.createElement('h2');
+        modalTitle.textContent = 'HOW TO PLAY';
+        
+        const closeButton = document.createElement('button');
+        closeButton.className = 'modal-close';
+        closeButton.textContent = '×';
+        closeButton.onclick = closeModal;
+        
+        modalHeader.appendChild(modalTitle);
+        modalHeader.appendChild(closeButton);
+        
+        // Modal content
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        modalContent.innerHTML = `
+            <p>Guess the secret 5-letter word in ${MAX_GUESSES} tries.</p>
+            
+            <div class="rule-section">
+                <div class="rule-number">1                </div>
+                <div class="rule-text">
+                    <p>After each guess, you'll see how many letters your word has in common with the secret word.</p>
+                    <div class="example">
+                        <div class="example-word">EARTH</div>
+                        <div class="example-score score-yellow">2</div>
+                    </div>
+                    <p class="example-caption">This guess has 2 letters in common with the secret word "LIGHT"</p>
+                </div>
+            </div>
+            
+            <div class="rule-section">
+                <div class="rule-number">2</div>
+                <div class="rule-text">
+                    <p>Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).</p>
+                </div>
+            </div>
+            
+            <div class="rule-section">
+                <div class="rule-number">3</div>
+                <div class="rule-text">
+                    <p>Hints are revealed on your 3rd, 6th, and 9th guesses. Each hint reveals one letter from the secret word.</p>
+                    <div class="example">
+                        <div class="example-word">L<span class="present">I</span>GHT</div>
+                    </div>
+                    <p class="example-caption">Yellow means the letter is in the secret word but in the wrong position.</p>
+                    <div class="example">
+                        <div class="example-word">L<span class="correct">I</span>GHT</div>
+                    </div>
+                    <p class="example-caption">Green means the letter is in the correct position.</p>
+                </div>
+            </div>
+            
+            <div class="rule-section">
+                <div class="rule-number">4</div>
+                <div class="rule-text">
+                    <p>Score colors indicate how close you are:</p>
+                    <div class="score-legend">
+                        <div class="score-item">
+                            <div class="example-score score-red">0</div>
+                            <span>No letters match</span>
+                        </div>
+                        <div class="score-item">
+                            <div class="example-score score-yellow">2</div>
+                            <span>1-2 letters match</span>
+                        </div>
+                        <div class="score-item">
+                            <div class="example-score score-blue">4</div>
+                            <span>3-4 letters match</span>
+                        </div>
+                        <div class="score-item">
+                            <div class="example-score score-green">5</div>
+                            <span>All 5 letters match</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Modal footer
+        const modalFooter = document.createElement('div');
+        modalFooter.className = 'modal-footer';
+        
+        const playButton = document.createElement('button');
+        playButton.className = 'modal-play-button';
+        playButton.textContent = 'PLAY';
+        playButton.onclick = closeModal;
+        
+        modalFooter.appendChild(playButton);
+        
+        // Assemble modal
+        modalContainer.appendChild(modalHeader);
+        modalContainer.appendChild(modalContent);
+        modalContainer.appendChild(modalFooter);
+        modalOverlay.appendChild(modalContainer);
+        
+        document.body.appendChild(modalOverlay);
+        
+        // Prevent scrolling when modal is open
+        document.body.style.overflow = 'hidden';
+    }
 
-1. Guess the secret 5-letter word in ${MAX_GUESSES} tries.
-2. After each guess, you'll see how many letters your word has in common with the secret word.
-3. Letters are only counted once. For example, if the secret word is "SNAKE" and you guess "KEEPS", you'd get a score of 3 (for S, K, E).
-4. Letters can be in any position.
-5. Hints are revealed on your 3rd, 6th, and 9th guesses. Each hint reveals one letter from the secret word.
-6. Hint letters are highlighted in all guesses:
-   - Green: correct letter in the correct position
-   - Yellow: correct letter in the wrong position
-7. Score colors: 🟥 (0 letters), 🟨 (1-2 letters), 🟦 (3-4 letters), 🟩 (5 letters).`);
+    function closeModal() {
+        const modalOverlay = document.querySelector('.modal-overlay');
+        if (modalOverlay) {
+            // Add closing animation
+            modalOverlay.classList.add('closing');
+            
+            // Wait for animation to complete before removing
+            setTimeout(() => {
+                document.body.removeChild(modalOverlay);
+                document.body.style.overflow = '';
+                
+                // Set localStorage to remember that user has seen the tutorial
+                localStorage.setItem('jottoTutorialSeen', 'true');
+            }, 300);
+        }
+    }
+
+    // Show the tutorial modal on first visit
+    function checkAndShowTutorial() {
+        const hasSeenTutorial = localStorage.getItem('jottoTutorialSeen') === 'true';
+        if (!hasSeenTutorial) {
+            createIntroModal();
+        }
+    }
+    
+    function showHowToPlay() {
+        createIntroModal();
     }
     
     // Function to update counter color based on number of guesses
@@ -470,7 +599,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, { passive: false });
     
+    // Connect the "How to Play" button to the modal
     howToPlayButton.onclick = showHowToPlay;
+    
+    // Check and show tutorial before initializing the game
+    checkAndShowTutorial();
     
     // Initialize the game
     initGame();
