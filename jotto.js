@@ -168,9 +168,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkForHintReveal() {
         const guessNumber = guesses.length;
         
-        // Reveal hints at 3rd, 6th, and 9th guesses
-        if ((guessNumber === 3 || guessNumber === 6 || guessNumber === 9) && 
-            revealedLetters.length < 3) {
+        // Reveal hints at 2nd, 4th, 6th, and 8th guesses
+        if ((guessNumber === 2 || guessNumber === 4 || guessNumber === 6 || guessNumber === 8) && 
+            revealedLetters.length < 4) {
             
             const hintLetter = getNextHintLetter();
             if (hintLetter) {
@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="rule-section">
                 <div class="rule-number">2</div>
                 <div class="rule-text">
-                    <p1>Hints are revealed on your 3rd, 6th, and 9th guesses. Each hint reveals one letter from the secret word.</p1>
+                    <p1>Hints are revealed on your 2nd, 4th, 6th and 8th guesses. Each hint reveals one letter from the secret word.</p1>
                     <div class="example">
                         <div class="example-word">L<span class="present">I</span>GHT</div>
                     </div>
